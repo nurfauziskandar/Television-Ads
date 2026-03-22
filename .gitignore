@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.db
+instance/
+venv/
+.env
+static/uploads/ads/*
+!static/uploads/ads/.gitkeep
+static/uploads/channels/*
+!static/uploads/channels/.gitkeep

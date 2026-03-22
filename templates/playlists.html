@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Playlist - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-layer-group"></i> Playlist
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-primary" onclick="openModal('playlist-modal'); resetPlaylistForm();">
+    <i class="fa-solid fa-plus"></i> Buat Playlist
+</button>
+{% endblock %}
+
+{% block content %}
+{% if playlists %}
+<div class="playlists-list">
+    {% for pl in playlists %}
+    <div class="card playlist-card" data-id="{{ pl.id }}">
+        <div class="card-header clickable" onclick="togglePlaylistExpand(this)">
+            <div class="playlist-header-left">
+                <i class="fa-solid fa-chevron-right expand-icon"></i>
+                <h3>{{ pl.name }}</h3>
+                <span class="badge">{{ pl.items|length }} item</span>
+                <label class="toggle toggle-sm" onclick="event.stopPropagation()">
+                    <input type="checkbox" {% if pl.is_active %}checked{% endif %}
+                           onchange="togglePlaylist({{ pl.id }}, this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="playlist-header-right" onclick="event.stopPropagation()">
+                <button class="btn-icon" title="Tambah Iklan"
+                        onclick="openAddItemModal({{ pl.id }})">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <button class="btn-icon" title="Edit"
+                        onclick="editPlaylist({{ pl.id }}, '{{ pl.name }}')">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon danger" title="Hapus"
+                        onclick="deletePlaylist({{ pl.id }}, '{{ pl.name }}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="playlist-items" style="display:none">
+            {% if pl.items %}
+            <div class="playlist-items-list" id="items-{{ pl.id }}">
+                {% for item in pl.items %}
+                <div class="playlist-item" data-item-id="{{ item.id }}">
+                    <div class="playlist-item-left">
+                        <span class="item-order">{{ loop.index }}</span>
+                        <div class="item-preview-sm">
+                            {% if item.ad.file_type == 'video' %}
+                            <i class="fa-solid fa-video"></i>
+                            {% else %}
+                            <i class="fa-solid fa-image"></i>
+                            {% endif %}
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name">{{ item.ad.name }}</span>
+                            <span class="item-meta">
+                                {{ item.ad.file_type }}
+                                {% if item.ad.file_type == 'image' %} / {{ item.ad.duration }}s{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="playlist-item-right">
+                        <button class="btn-icon sm" title="Pindah ke atas"
+                                onclick="moveItem({{ pl.id }}, {{ item.id }}, 'up')">
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                        <button class="btn-icon sm" title="Pindah ke bawah"
+                                onclick="moveItem({{ pl.id }}, {{ item.id }}, 'down')">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <button class="btn-icon sm danger" title="Hapus"
+                                onclick="removeItem({{ pl.id }}, {{ item.id }})">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="playlist-empty">
+                <p>Playlist kosong. Tambahkan iklan untuk memulai.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="fa-solid fa-layer-group"></i>
+            <h3>Belum ada playlist</h3>
+            <p>Buat playlist untuk mengatur urutan penayangan iklan.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Create/Edit Playlist Modal -->
+<div class="modal-overlay" id="playlist-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3 id="playlist-modal-title">Buat Playlist</h3>
+            <button class="btn-icon" onclick="closeModal('playlist-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="playlist-edit-id">
+            <div class="form-group">
+                <label class="form-label">Nama Playlist</label>
+                <input type="text" class="form-control" id="playlist-name"
+                       placeholder="Contoh: Iklan Pagi">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('playlist-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="savePlaylist()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal-overlay" id="add-item-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Tambah Iklan ke Playlist</h3>
+            <button class="btn-icon" onclick="closeModal('add-item-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="add-item-playlist-id">
+            {% if ads %}
+            <div class="ad-select-grid">
+                {% for ad in ads %}
+                <div class="ad-select-item" onclick="addItemToPlaylist({{ ad.id }})">
+                    <div class="ad-select-icon">
+                        {% if ad.file_type == 'video' %}
+                        <i class="fa-solid fa-video"></i>
+                        {% else %}
+                        <i class="fa-solid fa-image"></i>
+                        {% endif %}
+                    </div>
+                    <span>{{ ad.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state compact">
+                <p>Belum ada iklan aktif. <a href="/admin/ads">Upload iklan</a> terlebih dahulu.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Playlist Modal -->
+<div class="modal-overlay" id="delete-playlist-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Hapus Playlist</h3>
+            <button class="btn-icon" onclick="closeModal('delete-playlist-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Yakin ingin menghapus playlist <strong id="delete-playlist-name"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('delete-playlist-modal')">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeletePlaylist()">
+                <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deletePlaylistId = null;
+
+function resetPlaylistForm() {
+    document.getElementById('playlist-modal-title').textContent = 'Buat Playlist';
+    document.getElementById('playlist-edit-id').value = '';
+    document.getElementById('playlist-name').value = '';
+}
+
+function togglePlaylistExpand(header) {
+    const card = header.closest('.playlist-card');
+    const items = card.querySelector('.playlist-items');
+    const icon = header.querySelector('.expand-icon');
+    if (items.style.display === 'none') {
+        items.style.display = 'block';
+        icon.style.transform = 'rotate(90deg)';
+    } else {
+        items.style.display = 'none';
+        icon.style.transform = '';
+    }
+}
+
+function editPlaylist(id, name) {
+    document.getElementById('playlist-modal-title').textContent = 'Edit Playlist';
+    document.getElementById('playlist-edit-id').value = id;
+    document.getElementById('playlist-name').value = name;
+    openModal('playlist-modal');
+}
+
+async function savePlaylist() {
+    const id = document.getElementById('playlist-edit-id').value;
+    const name = document.getElementById('playlist-name').value.trim();
+    if (!name) {
+        showToast('Nama playlist wajib diisi', 'error');
+        return;
+    }
+    try {
+        if (id) {
+            await api('/api/playlists/' + id, { method: 'PUT', body: JSON.stringify({ name }) });
+            showToast('Playlist berhasil diperbarui', 'success');
+        } else {
+            await api('/api/playlists', { method: 'POST', body: JSON.stringify({ name }) });
+            showToast('Playlist berhasil dibuat', 'success');
+        }
+        closeModal('playlist-modal');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal menyimpan: ' + e.message, 'error');
+    }
+}
+
+async function togglePlaylist(id, active) {
+    try {
+        await api('/api/playlists/' + id, {
+            method: 'PUT',
+            body: JSON.stringify({ is_active: active }),
+        });
+    } catch (e) {
+        showToast('Gagal mengubah status', 'error');
+    }
+}
+
+function deletePlaylist(id, name) {
+    deletePlaylistId = id;
+    document.getElementById('delete-playlist-name').textContent = name;
+    openModal('delete-playlist-modal');
+}
+
+async function confirmDeletePlaylist() {
+    if (!deletePlaylistId) return;
+    try {
+        await api('/api/playlists/' + deletePlaylistId, { method: 'DELETE' });
+        showToast('Playlist berhasil dihapus', 'success');
+        closeModal('delete-playlist-modal');
+        const card = document.querySelector('.playlist-card[data-id="' + deletePlaylistId + '"]');
+        if (card) card.remove();
+        deletePlaylistId = null;
+    } catch (e) {
+        showToast('Gagal menghapus: ' + e.message, 'error');
+    }
+}
+
+function openAddItemModal(playlistId) {
+    document.getElementById('add-item-playlist-id').value = playlistId;
+    openModal('add-item-modal');
+}
+
+async function addItemToPlaylist(adId) {
+    const playlistId = document.getElementById('add-item-playlist-id').value;
+    try {
+        await api('/api/playlists/' + playlistId + '/items', {
+            method: 'POST',
+            body: JSON.stringify({ ad_id: adId }),
+        });
+        showToast('Iklan ditambahkan ke playlist', 'success');
+        closeModal('add-item-modal');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal menambahkan: ' + e.message, 'error');
+    }
+}
+
+async function removeItem(playlistId, itemId) {
+    try {
+        await api('/api/playlists/' + playlistId + '/items/' + itemId, { method: 'DELETE' });
+        showToast('Item dihapus dari playlist', 'success');
+        setTimeout(function() { location.reload(); }, 300);
+    } catch (e) {
+        showToast('Gagal menghapus item', 'error');
+    }
+}
+
+async function moveItem(playlistId, itemId, direction) {
+    const list = document.getElementById('items-' + playlistId);
+    if (!list) return;
+    const items = Array.from(list.querySelectorAll('.playlist-item'));
+    const ids = items.map(function(el) { return parseInt(el.dataset.itemId); });
+    const idx = ids.indexOf(itemId);
+    if (idx === -1) return;
+    if (direction === 'up' && idx > 0) {
+        [ids[idx], ids[idx - 1]] = [ids[idx - 1], ids[idx]];
+    } else if (direction === 'down' && idx < ids.length - 1) {
+        [ids[idx], ids[idx + 1]] = [ids[idx + 1], ids[idx]];
+    } else {
+        return;
+    }
+    try {
+        await api('/api/playlists/' + playlistId + '/items/reorder', {
+            method: 'PUT',
+            body: JSON.stringify({ items: ids }),
+        });
+        location.reload();
+    } catch (e) {
+        showToast('Gagal mengubah urutan', 'error');
+    }
+}
+</script>
+{% endblock %}

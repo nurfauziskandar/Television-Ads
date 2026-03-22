@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Kontrol TV - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-sliders"></i> Kontrol TV
+{% endblock %}
+
+{% block content %}
+
+{% if devices %}
+<!-- Device Selector -->
+<div class="card" style="margin-bottom:24px">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-display"></i> Pilih Perangkat</h3>
+    </div>
+    <div class="card-body">
+        <div class="ctrl-device-selector">
+            {% for dev in devices %}
+            <div class="ctrl-device-item" id="ctrl-dev-{{ dev.id }}"
+                 onclick="selectDevice({{ dev.id }}, '{{ dev.name }}', '{{ dev.location }}')">
+                <span class="status-dot" id="ctrl-dot-{{ dev.id }}"></span>
+                <div class="ctrl-device-info">
+                    <div class="ctrl-device-name">{{ dev.name }}</div>
+                    {% if dev.location %}
+                    <div class="ctrl-device-loc">{{ dev.location }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Control Panel (hidden until device selected) -->
+<div id="ctrl-panel" style="display:none">
+
+    <!-- Status -->
+    <div class="card control-status-card" style="margin-bottom:24px">
+        <div class="connection-info">
+            <span class="status-dot" id="ctrl-status-dot"></span>
+            <span id="ctrl-conn-text">Memeriksa...</span>
+        </div>
+        <div class="current-info" id="ctrl-current-info">
+            <span><i class="fa-solid fa-display"></i> <span id="ctrl-mode-text">-</span></span>
+            <span class="divider-v"></span>
+            <span><i class="fa-solid fa-play"></i> <span id="ctrl-playing-text">-</span></span>
+        </div>
+    </div>
+
+    <!-- Mode -->
+    <div class="mode-selector" style="margin-bottom:24px">
+        <button class="mode-btn active" data-mode="idle" onclick="setMode('idle')">
+            <i class="fa-solid fa-moon"></i>
+            <span class="mode-label">Idle</span>
+            <span class="mode-desc">Layar standby</span>
+        </button>
+        <button class="mode-btn" data-mode="iptv" onclick="setMode('iptv')">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span class="mode-label">IPTV</span>
+            <span class="mode-desc">Siaran langsung</span>
+        </button>
+        <button class="mode-btn" data-mode="ads" onclick="setMode('ads')">
+            <i class="fa-solid fa-rectangle-ad"></i>
+            <span class="mode-label">Iklan</span>
+            <span class="mode-desc">Putar playlist iklan</span>
+        </button>
+    </div>
+
+    <!-- IPTV Panel -->
+    <div class="control-panel" id="panel-iptv" style="display:none">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-satellite-dish"></i> Pilih Channel</h3>
+            </div>
+            <div class="card-body">
+                <div class="channel-grid" id="ctrl-channel-grid">
+                    <div class="empty-state compact">
+                        <p>Memuat channel...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ads Panel -->
+    <div class="control-panel" id="panel-ads" style="display:none">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-rectangle-ad"></i> Pilih Playlist Iklan</h3>
+            </div>
+            <div class="card-body">
+                <div class="playlist-select-grid" id="ctrl-playlist-grid">
+                    <div class="empty-state compact">
+                        <p>Memuat playlist...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="card" style="margin-top:24px">
+        <div class="card-body">
+            <div class="volume-control">
+                <label class="form-label" style="margin-bottom:0">
+                    <i class="fa-solid fa-volume-high"></i> Volume
+                </label>
+                <div class="volume-slider-wrap">
+                    <input type="range" class="volume-slider" id="volume-slider"
+                           min="0" max="100" value="80" oninput="updateVolume(this.value)">
+                    <span class="volume-value" id="volume-value">80%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="fa-solid fa-display"></i>
+            <h3>Belum ada perangkat</h3>
+            <p>Tambahkan perangkat TV terlebih dahulu di halaman
+                <a href="/admin/devices">Perangkat TV</a>.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const adminSocket = io('/admin');
+let currentDeviceId = null;
+let currentMode = 'idle';
+let volumeTimeout = null;
+
+// --- Socket.IO ---
+
+adminSocket.on('display_update', function(data) {
+    data.displays.forEach(function(d) {
+        const dot = document.getElementById('ctrl-dot-' + d.device_id);
+        if (dot) dot.classList.add('online');
+    });
+    document.querySelectorAll('[id^="ctrl-dot-"]').forEach(function(dot) {
+        const id = parseInt(dot.id.replace('ctrl-dot-', ''));
+        const isOnline = data.displays.some(function(d) { return d.device_id === id; });
+        dot.classList.toggle('online', isOnline);
+    });
+    // Update status panel for selected device
+    if (currentDeviceId) {
+        const info = data.displays.find(function(d) { return d.device_id === currentDeviceId; });
+        updateStatusPanel(info);
+    }
+});
+
+adminSocket.on('device_status_update', function(data) {
+    if (data.device_id !== currentDeviceId) return;
+    updateStatusPanel(data);
+});
+
+function updateStatusPanel(info) {
+    const dot = document.getElementById('ctrl-status-dot');
+    const text = document.getElementById('ctrl-conn-text');
+    const modeText = document.getElementById('ctrl-mode-text');
+    const playingText = document.getElementById('ctrl-playing-text');
+
+    if (info && info.mode) {
+        dot.classList.add('online');
+        text.textContent = 'Terhubung';
+        modeText.textContent = info.mode === 'iptv' ? 'IPTV' : info.mode === 'ads' ? 'Iklan' : 'Idle';
+        playingText.textContent = info.playing || '-';
+    } else {
+        dot.classList.remove('online');
+        text.textContent = 'Tidak terhubung';
+        modeText.textContent = '-';
+        playingText.textContent = '-';
+    }
+}
+
+// --- Device Selection ---
+
+async function selectDevice(id, name, location) {
+    currentDeviceId = id;
+
+    // highlight selected
+    document.querySelectorAll('.ctrl-device-item').forEach(function(el) {
+        el.classList.remove('selected');
+    });
+    document.getElementById('ctrl-dev-' + id).classList.add('selected');
+
+    document.getElementById('ctrl-panel').style.display = 'block';
+
+    // reset mode
+    setMode('idle', false);
+
+    // load device data
+    try {
+        const device = await api('/api/devices/' + id + '?assignments=true');
+        renderChannels(device.channels || []);
+        renderPlaylists(device.playlists || []);
+        updateStatusPanel(device);
+    } catch (e) {
+        showToast('Gagal memuat data perangkat', 'error');
+    }
+}
+
+function renderChannels(channels) {
+    const grid = document.getElementById('ctrl-channel-grid');
+    if (!channels.length) {
+        grid.innerHTML = '<div class="empty-state compact"><p>Tidak ada channel yang ditugaskan ke perangkat ini. ' +
+            '<a href="/admin/devices">Kelola perangkat</a></p></div>';
+        return;
+    }
+    grid.innerHTML = channels.map(function(ch) {
+        return '<div class="channel-card" onclick="playChannel(' + ch.id + ')" data-channel-id="' + ch.id + '">' +
+            '<div class="channel-card-logo">' +
+            (ch.logo_url
+                ? '<img src="' + ch.logo_url + '" alt="' + ch.name + '" onerror="this.parentElement.innerHTML=\'<i class=\\\'fa-solid fa-tv\\\'></i>\'">'
+                : '<i class="fa-solid fa-tv"></i>') +
+            '</div>' +
+            '<div class="channel-card-name">' + ch.name + '</div>' +
+            '<div class="channel-card-group">' + (ch.group || '') + '</div>' +
+            '</div>';
+    }).join('');
+}
+
+function renderPlaylists(playlists) {
+    const grid = document.getElementById('ctrl-playlist-grid');
+    if (!playlists.length) {
+        grid.innerHTML = '<div class="empty-state compact"><p>Tidak ada playlist yang ditugaskan ke perangkat ini. ' +
+            '<a href="/admin/devices">Kelola perangkat</a></p></div>';
+        return;
+    }
+    grid.innerHTML = playlists.map(function(pl) {
+        return '<div class="playlist-select-card" onclick="playAds(' + pl.id + ')" data-playlist-id="' + pl.id + '">' +
+            '<div class="playlist-select-icon"><i class="fa-solid fa-layer-group"></i></div>' +
+            '<div class="playlist-select-info">' +
+            '<div class="playlist-select-name">' + pl.name + '</div>' +
+            '<div class="playlist-select-meta">' + (pl.item_count || 0) + ' iklan</div>' +
+            '</div>' +
+            '<i class="fa-solid fa-play playlist-play-icon"></i>' +
+            '</div>';
+    }).join('');
+}
+
+// --- Mode & Commands ---
+
+function setMode(mode, sendIdle) {
+    currentMode = mode;
+    sendIdle = sendIdle !== false;
+    document.querySelectorAll('.mode-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    document.getElementById('panel-iptv').style.display = mode === 'iptv' ? 'block' : 'none';
+    document.getElementById('panel-ads').style.display = mode === 'ads' ? 'block' : 'none';
+    if (mode === 'idle' && sendIdle && currentDeviceId) {
+        sendCommand('idle');
+    }
+}
+
+async function playChannel(channelId) {
+    if (!currentDeviceId) return;
+    document.querySelectorAll('.channel-card').forEach(function(c) {
+        c.classList.remove('selected');
+    });
+    const card = document.querySelector('.channel-card[data-channel-id="' + channelId + '"]');
+    if (card) card.classList.add('selected');
+    try {
+        await sendCommand('play_channel', { channel_id: channelId });
+        showToast('Channel sedang diputar', 'success');
+    } catch (e) {
+        showToast('Gagal memutar channel', 'error');
+    }
+}
+
+async function playAds(playlistId) {
+    if (!currentDeviceId) return;
+    document.querySelectorAll('.playlist-select-card').forEach(function(c) {
+        c.classList.remove('selected');
+    });
+    const card = document.querySelector('.playlist-select-card[data-playlist-id="' + playlistId + '"]');
+    if (card) card.classList.add('selected');
+    try {
+        await sendCommand('play_ads', { playlist_id: playlistId });
+        showToast('Playlist sedang diputar', 'success');
+    } catch (e) {
+        showToast('Gagal memutar iklan', 'error');
+    }
+}
+
+function updateVolume(val) {
+    document.getElementById('volume-value').textContent = val + '%';
+    clearTimeout(volumeTimeout);
+    volumeTimeout = setTimeout(function() {
+        if (currentDeviceId) sendCommand('set_volume', { volume: parseInt(val) });
+    }, 300);
+}
+
+async function sendCommand(action, extra) {
+    const payload = Object.assign({ action: action, device_id: currentDeviceId }, extra || {});
+    return api('/api/display/command', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+}
+</script>
+{% endblock %}

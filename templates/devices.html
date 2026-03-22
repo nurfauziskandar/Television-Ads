@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block title %}Perangkat TV - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-display"></i> Perangkat TV
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-primary" onclick="openModal('device-modal'); resetDeviceForm();">
+    <i class="fa-solid fa-plus"></i> Tambah Perangkat
+</button>
+{% endblock %}
+
+{% block content %}
+{% if devices %}
+<div class="devices-grid">
+    {% for dev in devices %}
+    <div class="device-card" id="device-card-{{ dev.id }}" data-id="{{ dev.id }}"
+         data-token="{{ dev.token }}">
+        <div class="device-card-top">
+            <div class="device-card-status">
+                <span class="status-dot {% if dev.token in connected_displays %}online{% endif %}"
+                      id="dot-{{ dev.id }}"></span>
+                <span class="device-online-text" id="online-{{ dev.id }}">
+                    {% if dev.token in connected_displays %}Online{% else %}Offline{% endif %}
+                </span>
+            </div>
+            <div class="device-card-actions">
+                <button class="btn-icon sm" title="Salin URL Display"
+                        onclick="copyDisplayUrl('{{ dev.token }}')">
+                    <i class="fa-solid fa-link"></i>
+                </button>
+                <button class="btn-icon sm" title="Buat Token Baru"
+                        onclick="regenerateToken({{ dev.id }})">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button class="btn-icon sm" title="Edit"
+                        onclick="editDevice({{ dev.id }}, '{{ dev.name }}', '{{ dev.location }}')">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon sm danger" title="Hapus"
+                        onclick="deleteDevice({{ dev.id }}, '{{ dev.name }}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="device-card-body">
+            <div class="device-name">{{ dev.name }}</div>
+            {% if dev.location %}
+            <div class="device-location">
+                <i class="fa-solid fa-location-dot"></i> {{ dev.location }}
+            </div>
+            {% endif %}
+            <div class="device-mode-info" id="mode-{{ dev.id }}">
+                {% if dev.token in connected_displays %}
+                Mode: {{ connected_displays[dev.token].get('mode', 'idle') }}
+                {% endif %}
+            </div>
+            <div class="device-token-row">
+                <span class="device-token-text" id="token-text-{{ dev.id }}">
+                    {{ dev.token[:8] }}...{{ dev.token[-8:] }}
+                </span>
+            </div>
+        </div>
+
+        <div class="device-card-footer">
+            <button class="device-assign-btn" onclick="openAssignModal({{ dev.id }}, 'channels')">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <span>Channel</span>
+                <span class="assign-count" id="ch-count-{{ dev.id }}">
+                    {{ dev.channels|length }}
+                </span>
+            </button>
+            <button class="device-assign-btn" onclick="openAssignModal({{ dev.id }}, 'playlists')">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Playlist</span>
+                <span class="assign-count" id="pl-count-{{ dev.id }}">
+                    {{ dev.playlists|length }}
+                </span>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="fa-solid fa-display"></i>
+            <h3>Belum ada perangkat TV</h3>
+            <p>Tambahkan perangkat untuk mulai mengontrol setiap TV secara terpisah.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add/Edit Device Modal -->
+<div class="modal-overlay" id="device-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3 id="device-modal-title">Tambah Perangkat</h3>
+            <button class="btn-icon" onclick="closeModal('device-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="device-edit-id">
+            <div class="form-group">
+                <label class="form-label">Nama Perangkat</label>
+                <input type="text" class="form-control" id="device-name"
+                       placeholder="Contoh: TV Lobby, TV Ruang Rapat">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lokasi (opsional)</label>
+                <input type="text" class="form-control" id="device-location"
+                       placeholder="Contoh: Lantai 1, Gedung A">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('device-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveDevice()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Channels Modal -->
+<div class="modal-overlay" id="assign-channels-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Kelola Channel — <span id="assign-ch-device-name"></span></h3>
+            <button class="btn-icon" onclick="closeModal('assign-channels-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="assign-device-id">
+            {% if channels %}
+            <div class="assign-list" id="assign-channels-list">
+                {% for ch in channels %}
+                <label class="assign-item">
+                    <input type="checkbox" class="assign-checkbox" value="{{ ch.id }}">
+                    <div class="assign-item-info">
+                        <span class="assign-item-name">{{ ch.name }}</span>
+                        <span class="assign-item-meta">{{ ch.group }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state compact">
+                <p>Belum ada channel aktif.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('assign-channels-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveAssignChannels()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Playlists Modal -->
+<div class="modal-overlay" id="assign-playlists-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Kelola Playlist — <span id="assign-pl-device-name"></span></h3>
+            <button class="btn-icon" onclick="closeModal('assign-playlists-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="assign-pl-device-id">
+            {% if playlists %}
+            <div class="assign-list" id="assign-playlists-list">
+                {% for pl in playlists %}
+                <label class="assign-item">
+                    <input type="checkbox" class="assign-pl-checkbox" value="{{ pl.id }}">
+                    <div class="assign-item-info">
+                        <span class="assign-item-name">{{ pl.name }}</span>
+                        <span class="assign-item-meta">{{ pl.items|length }} iklan</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state compact">
+                <p>Belum ada playlist aktif.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('assign-playlists-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveAssignPlaylists()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Device Modal -->
+<div class="modal-overlay" id="delete-device-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Hapus Perangkat</h3>
+            <button class="btn-icon" onclick="closeModal('delete-device-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Yakin ingin menghapus perangkat <strong id="delete-device-name"></strong>?
+            Display yang sedang terhubung akan terputus.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('delete-device-modal')">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteDevice()">
+                <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const adminSocket = io('/admin');
+let deleteDeviceId = null;
+
+adminSocket.on('display_update', function(data) {
+    data.displays.forEach(function(d) {
+        const dot = document.getElementById('dot-' + d.device_id);
+        const text = document.getElementById('online-' + d.device_id);
+        const modeEl = document.getElementById('mode-' + d.device_id);
+        if (dot) { dot.classList.add('online'); }
+        if (text) { text.textContent = 'Online'; }
+        if (modeEl) { modeEl.textContent = 'Mode: ' + (d.mode || 'idle'); }
+    });
+    // mark others offline
+    document.querySelectorAll('.status-dot').forEach(function(dot) {
+        const card = dot.closest('.device-card');
+        if (!card) return;
+        const id = parseInt(card.dataset.id);
+        const isOnline = data.displays.some(function(d) { return d.device_id === id; });
+        dot.classList.toggle('online', isOnline);
+        const textEl = document.getElementById('online-' + id);
+        if (textEl) { textEl.textContent = isOnline ? 'Online' : 'Offline'; }
+    });
+});
+
+adminSocket.on('device_status_update', function(d) {
+    const modeEl = document.getElementById('mode-' + d.device_id);
+    if (modeEl) {
+        modeEl.textContent = 'Mode: ' + (d.mode || 'idle') +
+            (d.playing && d.playing !== '-' ? ' | ' + d.playing : '');
+    }
+});
+
+// --- Device CRUD ---
+
+function resetDeviceForm() {
+    document.getElementById('device-modal-title').textContent = 'Tambah Perangkat';
+    document.getElementById('device-edit-id').value = '';
+    document.getElementById('device-name').value = '';
+    document.getElementById('device-location').value = '';
+}
+
+function editDevice(id, name, location) {
+    document.getElementById('device-modal-title').textContent = 'Edit Perangkat';
+    document.getElementById('device-edit-id').value = id;
+    document.getElementById('device-name').value = name;
+    document.getElementById('device-location').value = location;
+    openModal('device-modal');
+}
+
+async function saveDevice() {
+    const id = document.getElementById('device-edit-id').value;
+    const data = {
+        name: document.getElementById('device-name').value.trim(),
+        location: document.getElementById('device-location').value.trim(),
+    };
+    if (!data.name) { showToast('Nama perangkat wajib diisi', 'error'); return; }
+    try {
+        if (id) {
+            await api('/api/devices/' + id, { method: 'PUT', body: JSON.stringify(data) });
+            showToast('Perangkat berhasil diperbarui', 'success');
+        } else {
+            await api('/api/devices', { method: 'POST', body: JSON.stringify(data) });
+            showToast('Perangkat berhasil ditambahkan', 'success');
+        }
+        closeModal('device-modal');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+
+function deleteDevice(id, name) {
+    deleteDeviceId = id;
+    document.getElementById('delete-device-name').textContent = name;
+    openModal('delete-device-modal');
+}
+
+async function confirmDeleteDevice() {
+    if (!deleteDeviceId) return;
+    try {
+        await api('/api/devices/' + deleteDeviceId, { method: 'DELETE' });
+        showToast('Perangkat berhasil dihapus', 'success');
+        closeModal('delete-device-modal');
+        const card = document.getElementById('device-card-' + deleteDeviceId);
+        if (card) card.remove();
+        deleteDeviceId = null;
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+
+async function regenerateToken(id) {
+    if (!confirm('Buat token baru? Display yang sedang terhubung akan terputus.')) return;
+    try {
+        const res = await api('/api/devices/' + id + '/token', { method: 'POST' });
+        showToast('Token baru berhasil dibuat', 'success');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+
+function copyDisplayUrl(token) {
+    const url = window.location.origin + '/display?token=' + token;
+    navigator.clipboard.writeText(url).then(function() {
+        showToast('URL Display disalin: ' + url, 'success');
+    }).catch(function() {
+        showToast('URL: ' + url, 'info');
+    });
+}
+
+// --- Assignment ---
+
+async function openAssignModal(deviceId, type) {
+    const device = await api('/api/devices/' + deviceId + '?assignments=true');
+    if (type === 'channels') {
+        document.getElementById('assign-device-id').value = deviceId;
+        document.getElementById('assign-ch-device-name').textContent = device.name;
+        const assigned = (device.channels || []).map(function(c) { return c.id; });
+        document.querySelectorAll('#assign-channels-list .assign-checkbox').forEach(function(cb) {
+            cb.checked = assigned.includes(parseInt(cb.value));
+        });
+        openModal('assign-channels-modal');
+    } else {
+        document.getElementById('assign-pl-device-id').value = deviceId;
+        document.getElementById('assign-pl-device-name').textContent = device.name;
+        const assigned = (device.playlists || []).map(function(p) { return p.id; });
+        document.querySelectorAll('#assign-playlists-list .assign-pl-checkbox').forEach(function(cb) {
+            cb.checked = assigned.includes(parseInt(cb.value));
+        });
+        openModal('assign-playlists-modal');
+    }
+}
+
+async function saveAssignChannels() {
+    const deviceId = document.getElementById('assign-device-id').value;
+    const ids = Array.from(document.querySelectorAll('#assign-channels-list .assign-checkbox:checked'))
+        .map(function(cb) { return parseInt(cb.value); });
+    try {
+        const res = await api('/api/devices/' + deviceId + '/channels', {
+            method: 'PUT',
+            body: JSON.stringify({ channel_ids: ids }),
+        });
+        document.getElementById('ch-count-' + deviceId).textContent = res.channel_count;
+        showToast('Channel berhasil disimpan', 'success');
+        closeModal('assign-channels-modal');
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+
+async function saveAssignPlaylists() {
+    const deviceId = document.getElementById('assign-pl-device-id').value;
+    const ids = Array.from(document.querySelectorAll('#assign-playlists-list .assign-pl-checkbox:checked'))
+        .map(function(cb) { return parseInt(cb.value); });
+    try {
+        const res = await api('/api/devices/' + deviceId + '/playlists', {
+            method: 'PUT',
+            body: JSON.stringify({ playlist_ids: ids }),
+        });
+        document.getElementById('pl-count-' + deviceId).textContent = res.playlist_count;
+        showToast('Playlist berhasil disimpan', 'success');
+        closeModal('assign-playlists-modal');
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+</script>
+{% endblock %}

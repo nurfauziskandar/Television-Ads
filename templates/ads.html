@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Iklan - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-rectangle-ad"></i> Iklan
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-primary" onclick="openModal('upload-modal')">
+    <i class="fa-solid fa-upload"></i> Upload Iklan
+</button>
+{% endblock %}
+
+{% block content %}
+{% if ads %}
+<div class="ads-grid">
+    {% for ad in ads %}
+    <div class="ad-card" data-id="{{ ad.id }}">
+        <div class="ad-preview">
+            {% if ad.file_type == 'video' %}
+            <video src="{{ url_for('static', filename='uploads/ads/' + ad.filename) }}"
+                   muted preload="metadata"></video>
+            <div class="ad-type-badge">
+                <i class="fa-solid fa-video"></i> Video
+            </div>
+            {% else %}
+            <img src="{{ url_for('static', filename='uploads/ads/' + ad.filename) }}" alt="{{ ad.name }}">
+            <div class="ad-type-badge">
+                <i class="fa-solid fa-image"></i> Gambar
+            </div>
+            {% endif %}
+        </div>
+        <div class="ad-info">
+            <div class="ad-name">{{ ad.name }}</div>
+            <div class="ad-meta">
+                {% if ad.file_type == 'image' %}
+                <span><i class="fa-regular fa-clock"></i> {{ ad.duration }}s</span>
+                {% endif %}
+                <label class="toggle toggle-sm">
+                    <input type="checkbox" {% if ad.is_active %}checked{% endif %}
+                           onchange="toggleAd({{ ad.id }}, this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="ad-actions">
+                <button class="btn-icon" title="Edit"
+                        onclick="editAd({{ ad.id }}, '{{ ad.name }}', {{ ad.duration }})">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon danger" title="Hapus"
+                        onclick="deleteAd({{ ad.id }}, '{{ ad.name }}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="fa-solid fa-rectangle-ad"></i>
+            <h3>Belum ada iklan</h3>
+            <p>Upload gambar atau video untuk dijadikan iklan.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="upload-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Upload Iklan</h3>
+            <button class="btn-icon" onclick="closeModal('upload-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="dropzone" id="dropzone"
+                 onclick="document.getElementById('file-input').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Klik atau seret file ke sini</p>
+                <span class="dropzone-hint">PNG, JPG, GIF, WEBP, MP4, WEBM (Maks 100MB)</span>
+                <input type="file" id="file-input" hidden
+                       accept="image/*,video/*" onchange="handleFileSelect(this)">
+            </div>
+            <div id="file-preview" class="file-preview" style="display:none">
+                <div class="file-preview-info">
+                    <i class="fa-solid fa-file" id="file-preview-icon"></i>
+                    <span id="file-preview-name"></span>
+                    <button class="btn-icon" onclick="clearFilePreview()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:16px">
+                <label class="form-label">Nama Iklan</label>
+                <input type="text" class="form-control" id="ad-name" placeholder="Nama iklan">
+            </div>
+            <div class="form-group" id="duration-group">
+                <label class="form-label">Durasi Tampil (detik) - untuk gambar</label>
+                <input type="number" class="form-control" id="ad-duration" value="10" min="1" max="300">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('upload-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="uploadAd()" id="upload-btn">
+                <i class="fa-solid fa-upload"></i> Upload
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-ad-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Edit Iklan</h3>
+            <button class="btn-icon" onclick="closeModal('edit-ad-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-ad-id">
+            <div class="form-group">
+                <label class="form-label">Nama Iklan</label>
+                <input type="text" class="form-control" id="edit-ad-name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Durasi Tampil (detik)</label>
+                <input type="number" class="form-control" id="edit-ad-duration" min="1" max="300">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('edit-ad-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveEditAd()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="delete-ad-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Hapus Iklan</h3>
+            <button class="btn-icon" onclick="closeModal('delete-ad-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Yakin ingin menghapus iklan <strong id="delete-ad-name"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('delete-ad-modal')">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAd()">
+                <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedFile = null;
+let deleteAdId = null;
+
+// Drag & Drop
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropzone.classList.add('drag-over');
+});
+dropzone.addEventListener('dragleave', function() {
+    dropzone.classList.remove('drag-over');
+});
+dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+function handleFileSelect(input) {
+    if (input.files.length) handleFile(input.files[0]);
+}
+
+function handleFile(file) {
+    selectedFile = file;
+    document.getElementById('file-preview').style.display = 'flex';
+    document.getElementById('file-preview-name').textContent = file.name;
+    const icon = document.getElementById('file-preview-icon');
+    icon.className = file.type.startsWith('video') ? 'fa-solid fa-video' : 'fa-solid fa-image';
+    if (!document.getElementById('ad-name').value) {
+        document.getElementById('ad-name').value = file.name.replace(/\.[^.]+$/, '');
+    }
+    document.getElementById('duration-group').style.display =
+        file.type.startsWith('video') ? 'none' : 'block';
+}
+
+function clearFilePreview() {
+    selectedFile = null;
+    document.getElementById('file-preview').style.display = 'none';
+    document.getElementById('file-input').value = '';
+}
+
+async function uploadAd() {
+    if (!selectedFile) {
+        showToast('Pilih file terlebih dahulu', 'error');
+        return;
+    }
+    const btn = document.getElementById('upload-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengupload...';
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('name', document.getElementById('ad-name').value.trim() || selectedFile.name);
+    formData.append('duration', document.getElementById('ad-duration').value);
+
+    try {
+        const resp = await fetch('/api/ads', { method: 'POST', body: formData });
+        if (!resp.ok) {
+            const err = await resp.json();
+            throw new Error(err.error || 'Upload gagal');
+        }
+        showToast('Iklan berhasil diupload', 'success');
+        closeModal('upload-modal');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal upload: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload';
+    }
+}
+
+function editAd(id, name, duration) {
+    document.getElementById('edit-ad-id').value = id;
+    document.getElementById('edit-ad-name').value = name;
+    document.getElementById('edit-ad-duration').value = duration;
+    openModal('edit-ad-modal');
+}
+
+async function saveEditAd() {
+    const id = document.getElementById('edit-ad-id').value;
+    try {
+        await api('/api/ads/' + id, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: document.getElementById('edit-ad-name').value.trim(),
+                duration: parseInt(document.getElementById('edit-ad-duration').value),
+            }),
+        });
+        showToast('Iklan berhasil diperbarui', 'success');
+        closeModal('edit-ad-modal');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal menyimpan: ' + e.message, 'error');
+    }
+}
+
+async function toggleAd(id, active) {
+    try {
+        await api('/api/ads/' + id, {
+            method: 'PUT',
+            body: JSON.stringify({ is_active: active }),
+        });
+    } catch (e) {
+        showToast('Gagal mengubah status', 'error');
+    }
+}
+
+function deleteAd(id, name) {
+    deleteAdId = id;
+    document.getElementById('delete-ad-name').textContent = name;
+    openModal('delete-ad-modal');
+}
+
+async function confirmDeleteAd() {
+    if (!deleteAdId) return;
+    try {
+        await api('/api/ads/' + deleteAdId, { method: 'DELETE' });
+        showToast('Iklan berhasil dihapus', 'success');
+        closeModal('delete-ad-modal');
+        const card = document.querySelector('.ad-card[data-id="' + deleteAdId + '"]');
+        if (card) card.remove();
+        deleteAdId = null;
+    } catch (e) {
+        showToast('Gagal menghapus: ' + e.message, 'error');
+    }
+}
+</script>
+{% endblock %}

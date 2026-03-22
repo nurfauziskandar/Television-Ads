@@ -1,0 +1,289 @@
+/* ===================================================================
+   TV Control — Display Client Stylesheet
+   =================================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    cursor: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+body:hover { cursor: default; }
+
+/* ===================================================================
+   Screens
+   =================================================================== */
+
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    z-index: 1;
+}
+
+.screen.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 10;
+}
+
+/* ===================================================================
+   Idle Screen
+   =================================================================== */
+
+#screen-idle {
+    background: radial-gradient(ellipse at center, #0a1628 0%, #050a14 70%);
+}
+
+.idle-content {
+    text-align: center;
+    z-index: 2;
+}
+
+.idle-icon {
+    font-size: 48px;
+    color: rgba(76, 123, 245, 0.5);
+    margin-bottom: 20px;
+}
+
+.idle-clock {
+    font-size: 80px;
+    font-weight: 200;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.idle-date {
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 28px;
+}
+
+.idle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.idle-status {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.idle-pulse {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(76, 123, 245, 0.06) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+}
+
+/* ===================================================================
+   IPTV Screen
+   =================================================================== */
+
+#screen-iptv {
+    background: #000;
+}
+
+#iptv-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+
+.channel-overlay {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 20;
+}
+
+.channel-overlay.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.channel-overlay-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.channel-overlay-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.channel-overlay-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.channel-overlay-group {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.loading-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 15;
+}
+
+.loading-indicator i { font-size: 18px; }
+
+.error-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 48px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 12px;
+    text-align: center;
+    z-index: 15;
+}
+
+.error-indicator i {
+    font-size: 36px;
+    color: #f56565;
+}
+
+.error-indicator span {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===================================================================
+   Ads Screen
+   =================================================================== */
+
+#screen-ads {
+    background: #000;
+}
+
+.ad-layer {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease;
+}
+
+.ad-layer.fade-out { opacity: 0; }
+.ad-layer.fade-in { opacity: 1; }
+
+.ad-media {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ad-progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 20;
+}
+
+.ad-progress-bar {
+    height: 100%;
+    background: rgba(76, 123, 245, 0.7);
+    width: 0;
+    transition: width 0.1s linear;
+}
+
+/* ===================================================================
+   Connection Indicator
+   =================================================================== */
+
+.connection-indicator {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 50;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.connection-indicator:hover { opacity: 1; }
+
+.conn-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f56565;
+    display: block;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.conn-dot.connected {
+    background: #2dd4a0;
+    box-shadow: 0 0 6px #2dd4a0;
+}

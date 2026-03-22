@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-gauge-high"></i> Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--accent-subtle); color: var(--accent);">
+            <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ stats.channels }}</div>
+            <div class="stat-label">Channel IPTV</div>
+            <div class="stat-sub">{{ stats.active_channels }} aktif</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success-subtle); color: var(--success);">
+            <i class="fa-solid fa-rectangle-ad"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ stats.ads }}</div>
+            <div class="stat-label">Iklan</div>
+            <div class="stat-sub">{{ stats.active_ads }} aktif</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning-subtle); color: var(--warning);">
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ stats.playlists }}</div>
+            <div class="stat-label">Playlist</div>
+            <div class="stat-sub">{{ stats.active_playlists }} aktif</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger-subtle); color: var(--danger);">
+            <i class="fa-solid fa-display"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ stats.devices }}</div>
+            <div class="stat-label">Perangkat TV</div>
+            <div class="stat-sub" id="dash-display-status">
+                <span id="dash-display-count">{{ stats.displays }}</span> online
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-bolt"></i> Aksi Cepat</h3>
+        </div>
+        <div class="card-body">
+            <div class="quick-actions">
+                <a href="/admin/channels" class="quick-action-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Channel</span>
+                </a>
+                <a href="/admin/ads" class="quick-action-btn">
+                    <i class="fa-solid fa-upload"></i>
+                    <span>Upload Iklan</span>
+                </a>
+                <a href="/admin/control" class="quick-action-btn">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Kontrol TV</span>
+                </a>
+                <a href="/display" target="_blank" class="quick-action-btn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span>Buka Display</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-tv"></i> Status Display</h3>
+        </div>
+        <div class="card-body">
+            <div id="display-status-panel">
+                <div class="status-item">
+                    <span class="status-label">Koneksi</span>
+                    <span class="status-value" id="dash-conn-status">
+                        <span class="status-dot {% if stats.displays > 0 %}online{% endif %}"></span>
+                        <span id="dash-conn-text">{% if stats.displays > 0 %}Terhubung{% else %}Tidak ada display{% endif %}</span>
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Mode</span>
+                    <span class="status-value" id="dash-mode">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Sedang Ditayangkan</span>
+                    <span class="status-value" id="dash-playing">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const adminSocket = io('/admin');
+
+    adminSocket.on('display_update', function(data) {
+        document.getElementById('dash-display-count').textContent = data.count;
+        const connDot = document.querySelector('#dash-conn-status .status-dot');
+        const connText = document.getElementById('dash-conn-text');
+        if (data.count > 0) {
+            connDot.classList.add('online');
+            connText.textContent = data.count + ' perangkat online';
+        } else {
+            connDot.classList.remove('online');
+            connText.textContent = 'Tidak ada display terhubung';
+        }
+        updateSidebarStatus(data.count);
+    });
+
+    adminSocket.on('device_status_update', function(data) {
+        const modeEl = document.getElementById('dash-mode');
+        const playingEl = document.getElementById('dash-playing');
+        if (data.mode) {
+            modeEl.textContent = (data.name || '') + ' — ' +
+                (data.mode === 'iptv' ? 'IPTV' : data.mode === 'ads' ? 'Iklan' : 'Idle');
+        }
+        if (data.playing) {
+            playingEl.textContent = data.playing;
+        }
+    });
+});
+</script>
+{% endblock %}

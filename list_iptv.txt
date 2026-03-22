@@ -1,0 +1,315 @@
+#EXTM3U
+# ============================================================
+# Indonesian IPTV Channel List
+# Sources: iptv-org/iptv (GitHub), riotryulianto/iptv-playlists,
+#          underworld111/IPTV, Sprtcrnbry/streaming-tv-indonesia
+# Last updated: 2026-03-22
+# NOTE: Stream URLs may change. Use iptv-org/iptv as primary
+#       reference for the most up-to-date verified links.
+# ============================================================
+
+# --- MAJOR NATIONAL CHANNELS ---
+
+#EXTINF:-1 tvg-id="RCTI.id" tvg-name="RCTI" group-title="Indonesia",RCTI
+http://103.66.62.83:8000/play/a00v/index.m3u8
+
+#EXTINF:-1 tvg-id="RCTI.id" tvg-name="RCTI HD" group-title="Indonesia",RCTI HD (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/rcti/manifest.mpd
+
+#EXTINF:-1 tvg-id="SCTV.id" tvg-name="SCTV" group-title="Indonesia",SCTV
+http://id2.indostreamingtv.com/live/tv2/index.m3u8 (Tidak bisa)
+
+#EXTINF:-1 tvg-id="MNCTV.id" tvg-name="MNCTV" group-title="Indonesia",MNCTV (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/mnctv/manifest.mpd
+
+#EXTINF:-1 tvg-id="GTV.id" tvg-name="GTV" group-title="Indonesia",GTV
+http://id6.indostreamingtv.com/live/tv1/index.m3u8 (Tidak bisa)
+
+#EXTINF:-1 tvg-id="GTV.id" tvg-name="GTV HD" group-title="Indonesia",GTV HD (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/globaltv/manifest.mpd
+
+#EXTINF:-1 tvg-id="Trans7.id" tvg-name="Trans7" group-title="Indonesia",Trans7
+https://video.detik.com/trans7/smil:trans7.smil/index.m3u8
+
+#EXTINF:-1 tvg-id="TransTV.id" tvg-name="Trans TV" group-title="Indonesia",Trans TV
+https://video.detik.com/transtv/smil:transtv.smil/index.m3u8
+
+#EXTINF:-1 tvg-id="MetroTV.id" tvg-name="Metro TV" group-title="Indonesia",Metro TV
+https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8
+
+#EXTINF:-1 tvg-id="tvOne.id" tvg-name="tvOne" group-title="Indonesia",tvOne
+http://202.80.222.20/cdn/iptv/Tvod/001/channel2000018/1024.m3u8
+
+#EXTINF:-1 tvg-id="ANTV.id" tvg-name="ANTV" group-title="Indonesia",ANTV
+http://202.80.222.20/cdn/iptv/Tvod/001/channel2000022/1024.m3u8
+
+#EXTINF:-1 tvg-id="iNews.id" tvg-name="iNews" group-title="Indonesia",iNews
+http://202.80.222.175/000001/2/ch14041511541532132975/1001.m3u8
+
+#EXTINF:-1 tvg-id="iNews.id" tvg-name="iNews HD" group-title="Indonesia",iNews HD (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/inews/manifest.mpd
+
+#EXTINF:-1 tvg-id="NET.id" tvg-name="NET." group-title="Indonesia",NET.
+http://202.80.222.170/000001/2/ch00000090990000001723/index.m3u8
+
+#EXTINF:-1 tvg-id="KompasTV.id" tvg-name="Kompas TV" group-title="Indonesia",Kompas TV
+http://202.80.222.130/000001/2/ch00000090990000001730/1001.m3u8
+
+#EXTINF:-1 tvg-id="Indosiar.id" tvg-name="Indosiar" group-title="Indonesia",Indosiar
+http://202.80.222.182/000001/2/ch15051810235326945512/1001.m3u8
+
+# --- TVRI (PUBLIC BROADCASTER) ---
+
+#EXTINF:-1 tvg-id="TVRI.id" tvg-name="TVRI Nasional" group-title="Indonesia - TVRI",TVRI Nasional
+https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8
+
+#EXTINF:-1 tvg-id="TVRISport.id" tvg-name="TVRI Sport HD" group-title="Indonesia - TVRI",TVRI Sport HD
+https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD.m3u8
+
+#EXTINF:-1 tvg-id="TVRIWorld.id" tvg-name="TVRI World" group-title="Indonesia - TVRI",TVRI World
+https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld.m3u8
+
+#EXTINF:-1 tvg-id="TVRIJakarta.id" tvg-name="TVRI Jakarta" group-title="Indonesia - TVRI",TVRI Jakarta
+https://ott-balancer.tvri.go.id/live/eds/DKI/hls/DKI.m3u8
+
+#EXTINF:-1 tvg-id="TVRIJabar.id" tvg-name="TVRI Jawa Barat" group-title="Indonesia - TVRI",TVRI Jawa Barat
+https://ott-balancer.tvri.go.id/live/eds/Jabar/hls/Jabar.m3u8
+
+#EXTINF:-1 tvg-id="TVRIJateng.id" tvg-name="TVRI Jawa Tengah" group-title="Indonesia - TVRI",TVRI Jawa Tengah
+https://ott-balancer.tvri.go.id/live/eds/Jateng/hls/Jateng.m3u8
+
+#EXTINF:-1 tvg-id="TVRIJatim.id" tvg-name="TVRI Jawa Timur" group-title="Indonesia - TVRI",TVRI Jawa Timur
+https://ott-balancer.tvri.go.id/live/eds/Jatim/hls/Jatim.m3u8
+
+#EXTINF:-1 tvg-id="TVRIYogyakarta.id" tvg-name="TVRI Yogyakarta" group-title="Indonesia - TVRI",TVRI Yogyakarta
+https://ott-balancer.tvri.go.id/live/eds/Jogjakarta/hls/Jogjakarta.m3u8
+
+#EXTINF:-1 tvg-id="TVRIAceh.id" tvg-name="TVRI Aceh" group-title="Indonesia - TVRI",TVRI Aceh
+https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8
+
+#EXTINF:-1 tvg-id="TVRISumut.id" tvg-name="TVRI North Sumatra" group-title="Indonesia - TVRI",TVRI North Sumatra
+https://ott-balancer.tvri.go.id/live/eds/Sumut/hls/Sumut.m3u8
+
+#EXTINF:-1 tvg-id="TVRISumbar.id" tvg-name="TVRI Sumatera Barat" group-title="Indonesia - TVRI",TVRI Sumatera Barat
+https://ott-balancer.tvri.go.id/live/eds/Sumbar/hls/Sumbar.m3u8
+
+#EXTINF:-1 tvg-id="TVRIRiau.id" tvg-name="TVRI Riau" group-title="Indonesia - TVRI",TVRI Riau
+https://ott-balancer.tvri.go.id/live/eds/Riau/hls/Riau.m3u8
+
+#EXTINF:-1 tvg-id="TVRIJambi.id" tvg-name="TVRI Jambi" group-title="Indonesia - TVRI",TVRI Jambi
+https://ott-balancer.tvri.go.id/live/eds/Jambi/hls/Jambi.m3u8
+
+#EXTINF:-1 tvg-id="TVRISumsel.id" tvg-name="TVRI Sumatera Selatan" group-title="Indonesia - TVRI",TVRI Sumatera Selatan
+https://ott-balancer.tvri.go.id/live/eds/Sumsel/hls/Sumsel.m3u8
+
+#EXTINF:-1 tvg-id="TVRIBengkulu.id" tvg-name="TVRI Bengkulu" group-title="Indonesia - TVRI",TVRI Bengkulu
+https://ott-balancer.tvri.go.id/live/eds/Bengkulu/hls/Bengkulu.m3u8
+
+#EXTINF:-1 tvg-id="TVRILampung.id" tvg-name="TVRI Lampung" group-title="Indonesia - TVRI",TVRI Lampung
+https://ott-balancer.tvri.go.id/live/eds/Lampung/hls/Lampung.m3u8
+
+#EXTINF:-1 tvg-id="TVRIBabel.id" tvg-name="TVRI Bangka Belitung" group-title="Indonesia - TVRI",TVRI Bangka Belitung
+https://ott-balancer.tvri.go.id/live/eds/Babel/hls/Babel.m3u8
+
+#EXTINF:-1 tvg-id="TVRIBali.id" tvg-name="TVRI Bali" group-title="Indonesia - TVRI",TVRI Bali
+https://ott-balancer.tvri.go.id/live/eds/Bali/hls/Bali.m3u8
+
+#EXTINF:-1 tvg-id="TVRINTF.id" tvg-name="TVRI Nusa Tenggara Barat" group-title="Indonesia - TVRI",TVRI Nusa Tenggara Barat
+https://ott-balancer.tvri.go.id/live/eds/NTB/hls/NTB.m3u8
+
+#EXTINF:-1 tvg-id="TVRINTF.id" tvg-name="TVRI Nusa Tenggara Timur" group-title="Indonesia - TVRI",TVRI Nusa Tenggara Timur
+https://ott-balancer.tvri.go.id/live/eds/NTT/hls/NTT.m3u8
+
+#EXTINF:-1 tvg-id="TVRIKalbar.id" tvg-name="TVRI Kalimantan Barat" group-title="Indonesia - TVRI",TVRI Kalimantan Barat
+https://ott-balancer.tvri.go.id/live/eds/Kalbar/hls/Kalbar.m3u8
+
+#EXTINF:-1 tvg-id="TVRIKalteng.id" tvg-name="TVRI Kalimantan Tengah" group-title="Indonesia - TVRI",TVRI Kalimantan Tengah
+https://ott-balancer.tvri.go.id/live/eds/Kalteng/hls/Kalteng.m3u8
+
+#EXTINF:-1 tvg-id="TVRIKalsel.id" tvg-name="TVRI Kalimantan Selatan" group-title="Indonesia - TVRI",TVRI Kalimantan Selatan
+https://ott-balancer.tvri.go.id/live/eds/Kalsel/hls/Kalsel.m3u8
+
+#EXTINF:-1 tvg-id="TVRIKaltim.id" tvg-name="TVRI Kalimantan Timur" group-title="Indonesia - TVRI",TVRI Kalimantan Timur
+https://ott-balancer.tvri.go.id/live/eds/Kaltim/hls/Kaltim.m3u8
+
+#EXTINF:-1 tvg-id="TVRISulut.id" tvg-name="TVRI North Sulawesi" group-title="Indonesia - TVRI",TVRI North Sulawesi
+https://ott-balancer.tvri.go.id/live/eds/Sulut/hls/Sulut.m3u8
+
+#EXTINF:-1 tvg-id="TVRISulteng.id" tvg-name="TVRI Sulawesi Tengah" group-title="Indonesia - TVRI",TVRI Sulawesi Tengah
+https://ott-balancer.tvri.go.id/live/eds/Sulteng/hls/Sulteng.m3u8
+
+#EXTINF:-1 tvg-id="TVRISulsel.id" tvg-name="TVRI Sulawesi Selatan" group-title="Indonesia - TVRI",TVRI Sulawesi Selatan
+https://ott-balancer.tvri.go.id/live/eds/Sulsel/hls/Sulsel.m3u8
+
+#EXTINF:-1 tvg-id="TVRISultra.id" tvg-name="TVRI Sulawesi Tenggara" group-title="Indonesia - TVRI",TVRI Sulawesi Tenggara
+https://ott-balancer.tvri.go.id/live/eds/Sultra/hls/Sultra.m3u8
+
+#EXTINF:-1 tvg-id="TVRISulbar.id" tvg-name="TVRI Sulawesi Barat" group-title="Indonesia - TVRI",TVRI Sulawesi Barat
+https://ott-balancer.tvri.go.id/live/eds/Sulbar/hls/Sulbar.m3u8
+
+#EXTINF:-1 tvg-id="TVRIGorontalo.id" tvg-name="TVRI Gorontalo" group-title="Indonesia - TVRI",TVRI Gorontalo
+https://ott-balancer.tvri.go.id/live/eds/Gorontalo/hls/Gorontalo.m3u8
+
+#EXTINF:-1 tvg-id="TVRIMaluku.id" tvg-name="TVRI Maluku" group-title="Indonesia - TVRI",TVRI Maluku
+https://ott-balancer.tvri.go.id/live/eds/Ambon/hls/Ambon.m3u8
+
+#EXTINF:-1 tvg-id="TVRIPapua.id" tvg-name="TVRI Papua" group-title="Indonesia - TVRI",TVRI Papua
+https://ott-balancer.tvri.go.id/live/eds/Papua/hls/Papua.m3u8
+
+#EXTINF:-1 tvg-id="TVRIPabar.id" tvg-name="TVRI West Papua" group-title="Indonesia - TVRI",TVRI West Papua
+https://ott-balancer.tvri.go.id/live/eds/Pabar/hls/Pabar.m3u8
+
+# --- NEWS CHANNELS ---
+
+#EXTINF:-1 tvg-id="CNBCIndonesia.id" tvg-name="CNBC Indonesia" group-title="Indonesia - News",CNBC Indonesia
+https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8
+
+#EXTINF:-1 tvg-id="CNNIndonesia.id" tvg-name="CNN Indonesia" group-title="Indonesia - News",CNN Indonesia
+http://live.cnnindonesia.com/livecnn/smil:cnntv.smil/playlist.m3u8
+
+#EXTINF:-1 tvg-id="MagnaChannel.id" tvg-name="Magna Channel" group-title="Indonesia - News",Magna Channel
+https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8
+
+#EXTINF:-1 tvg-id="MetroGlobeNetwork.id" tvg-name="Metro Globe Network" group-title="Indonesia - News",Metro Globe Network
+https://edge.medcom.id/live-edge/smil:mgnch.smil/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BeritaSatu.id" tvg-name="BeritaSatu English" group-title="Indonesia - News",BeritaSatu English
+https://beritasatu.secureswiftcontent.com/han/beritasatu/bsatu10008/srtoutput/manifest.m3u8
+
+#EXTINF:-1 tvg-id="JakartaGlobe.id" tvg-name="Jakarta Globe News Channel" group-title="Indonesia - News",Jakarta Globe News Channel
+https://jktglobe.secureswiftcontent.com/han/jktglobe/jktglobe/srtoutput/manifest.m3u8
+
+#EXTINF:-1 tvg-id="Indonesiana.id" tvg-name="Indonesiana.TV" group-title="Indonesia - News",Indonesiana.TV
+https://tvstreamcast.com/indonesiana.m3u8
+
+#EXTINF:-1 tvg-id="ElshintaTV.id" tvg-name="Elshinta TV" group-title="Indonesia - News",Elshinta TV
+https://ams.juraganstreaming.com:5443/LiveApp/streams/elshintatv.m3u8
+
+# --- OTHER NATIONAL / MAJOR CHANNELS ---
+
+#EXTINF:-1 tvg-id="RajawaliTV.id" tvg-name="Rajawali TV (RTV)" group-title="Indonesia",Rajawali TV (RTV)
+https://rtvstream.rtv.co.id:4555/hls/rtv.m3u8
+
+#EXTINF:-1 tvg-id="JakTV.id" tvg-name="Jak TV" group-title="Indonesia",Jak TV
+http://202.80.222.182:80/000001/2/ch00000090990000001695/1001.m3u8
+
+#EXTINF:-1 tvg-id="JakTV.id" tvg-name="Jak TV HD" group-title="Indonesia",Jak TV HD (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/JAK_TV/manifest.mpd
+
+#EXTINF:-1 tvg-id="IDXChannel.id" tvg-name="IDX Channel" group-title="Indonesia",IDX Channel (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/idx/manifest.mpd
+
+#EXTINF:-1 tvg-id="SindoNews.id" tvg-name="Sindo News TV" group-title="Indonesia",Sindo News TV (IndihomeTV DASH)
+https://cdn10jtedge.indihometv.com/atm/DASH/mncnews/manifest.mpd
+
+#EXTINF:-1 tvg-id="IDTV.id" tvg-name="IDTV (B1 World)" group-title="Indonesia",IDTV (B1 World)
+https://b1world.beritasatumedia.com/Beritasatu/B1World_manifest.m3u8
+
+#EXTINF:-1 tvg-id="BTV.id" tvg-name="BTV" group-title="Indonesia",BTV
+https://btv.secureswiftcontent.com/han/btv/btv10005/srtoutput/manifest.m3u8
+
+#EXTINF:-1 tvg-id="DAAITV.id" tvg-name="DAAI TV" group-title="Indonesia",DAAI TV
+https://pull.daaiplus.com/live-DAAIPLUS/live-DAAIPLUS_HD.m3u8
+
+#EXTINF:-1 tvg-id="TVRParlemen.id" tvg-name="TVR Parlemen" group-title="Indonesia",TVR Parlemen
+https://ssv1.dpr.go.id/golive/livestream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RRINet.id" tvg-name="RRI Net" group-title="Indonesia",RRI Net
+https://private-streaming.rri.go.id/memfs/6f77c7b5-feb2-4935-9f89-e7e9fca0a54a_output_0.m3u8
+
+# --- REGIONAL / LOCAL CHANNELS ---
+
+#EXTINF:-1 tvg-id="BaliTV.id" tvg-name="Bali TV" group-title="Indonesia - Regional",Bali TV
+https://cdn10jtedge.indihometv.com/atm/DASH/balitv/manifest.mpd
+
+#EXTINF:-1 tvg-id="JTV.id" tvg-name="JTV" group-title="Indonesia - Regional",JTV
+https://cdn10jtedge.indihometv.com/atm/DASH/jtv/manifest.mpd
+
+#EXTINF:-1 tvg-id="JogjaTV.id" tvg-name="Jogja TV" group-title="Indonesia - Regional",Jogja TV
+https://stream.jogjatv.co.id/jtvlive/stream/index.m3u8
+
+#EXTINF:-1 tvg-id="JogjaIstimewaTV.id" tvg-name="Jogja Istimewa TV" group-title="Indonesia - Regional",Jogja Istimewa TV
+http://103.255.15.222:1935/tv/jitv_720p/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BBSTV.id" tvg-name="BBS TV Surabaya" group-title="Indonesia - Regional",BBS TV Surabaya
+http://ss.bbstv.co.id:1935/bbstv/live1/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BantenTV.id" tvg-name="Banten TV" group-title="Indonesia - Regional",Banten TV
+https://5bf7b725107e5.streamlock.net/bantentv/bantentv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="SemarangTV.id" tvg-name="Semarang TV" group-title="Indonesia - Regional",Semarang TV
+http://116.254.112.74/hls/cakralive.m3u8
+
+#EXTINF:-1 tvg-id="TATV.id" tvg-name="TATV" group-title="Indonesia - Regional",TATV
+https://v2.siar.us/tatv/live.sdp/playlist.m3u8
+
+#EXTINF:-1 tvg-id="JawaPosTVJkt.id" tvg-name="Jawa Pos TV Jakarta" group-title="Indonesia - Regional",Jawa Pos TV Jakarta
+http://122.248.43.242:1935/JAWAPOSTVJKT/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="JawaPosTVSby.id" tvg-name="Jawa Pos TV Surabaya" group-title="Indonesia - Regional",Jawa Pos TV Surabaya
+http://122.248.43.242:1935/JAWAPOSTVSBY/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="JawaPosTVSem.id" tvg-name="Jawa Pos TV Semarang" group-title="Indonesia - Regional",Jawa Pos TV Semarang
+http://122.248.43.242:1935/JAWAPOSTVSEMARANG/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RiauTV.id" tvg-name="Riau TV" group-title="Indonesia - Regional",Riau TV
+http://122.248.43.242:1935/RIAUTV/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PadangTV.id" tvg-name="Padang TV" group-title="Indonesia - Regional",Padang TV
+http://122.248.43.242:1935/PADANGTV/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FajarTV.id" tvg-name="Fajar TV" group-title="Indonesia - Regional",Fajar TV
+http://122.248.43.242:1935/FAJARTV/_definst_/myStream/playlist.m3u8
+
+#EXTINF:-1 tvg-id="CelebesTV.id" tvg-name="Celebes TV" group-title="Indonesia - Regional",Celebes TV
+https://ams.juraganstreaming.com:5443/LiveApp/streams/celebesmedia.m3u8
+
+#EXTINF:-1 tvg-id="MQTV.id" tvg-name="MQTV" group-title="Indonesia - Regional",MQTV
+https://5bf7b725107e5.streamlock.net/mqtv/mqtv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BandungTV.id" tvg-name="Bandung TV" group-title="Indonesia - Regional",Bandung TV
+http://202.150.153.254:65500/bandungtvWEBSITE.m3u8
+
+#EXTINF:-1 tvg-id="RodjaTV.id" tvg-name="Rodja TV" group-title="Indonesia - Regional",Rodja TV
+https://rodjatv.com/rodjatv/live.m3u8
+
+#EXTINF:-1 tvg-id="TV9Nusantara.id" tvg-name="TV9 Nusantara" group-title="Indonesia - Regional",TV9 Nusantara
+https://5bf7b725107e5.streamlock.net/tv9/tv9/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TVKU.id" tvg-name="TVKU" group-title="Indonesia - Regional",TVKU
+https://tvku.tv/hlsstream/hls/live.m3u8
+
+#EXTINF:-1 tvg-id="SurabayaTV.id" tvg-name="Surabaya TV" group-title="Indonesia - Regional",Surabaya TV
+https://e.siar.us/live/surabayatv.m3u8
+
+#EXTINF:-1 tvg-id="NusantaraTV.id" tvg-name="Nusantara TV" group-title="Indonesia - Regional",Nusantara TV
+https://nusantaratv.siar.us/nusantaratv/live/playlist.m3u8
+
+#EXTINF:-1 tvg-id="CarubanTV.id" tvg-name="Caruban TV" group-title="Indonesia - Regional",Caruban TV
+https://stream.carubantv.id/hls/0/stream.m3u8
+
+#EXTINF:-1 tvg-id="MatrixTV.id" tvg-name="Matrix TV Yogyakarta" group-title="Indonesia - Regional",Matrix TV Yogyakarta
+https://stream.matrixtv.id/hls/0/stream.m3u8
+
+#EXTINF:-1 tvg-id="StaraTV.id" tvg-name="Stara TV" group-title="Indonesia - Regional",Stara TV
+https://stream.staratv.id/hls/0/stream.m3u8
+
+#EXTINF:-1 tvg-id="StaraTVJakarta.id" tvg-name="Stara TV Jakarta" group-title="Indonesia - Regional",Stara TV Jakarta
+https://jakarta.staratv.id/hls/0/stream.m3u8
+
+#EXTINF:-1 tvg-id="StaraTVBandung.id" tvg-name="Stara TV Bandung" group-title="Indonesia - Regional",Stara TV Bandung
+https://bandung.staratv.id/hls/0/stream.m3u8
+
+#EXTINF:-1 tvg-id="StaraTVMalang.id" tvg-name="Stara TV Malang" group-title="Indonesia - Regional",Stara TV Malang
+https://malang.staratv.id/hls/0/stream.m3u8
+
+# --- BIZNET (Free ISP Streams) ---
+
+#EXTINF:-1 tvg-id="BiznetAdventure.id" tvg-name="Biznet Adventure" group-title="Indonesia - Biznet",Biznet Adventure
+http://livestream.biznetvideo.net/biznet_adventure/smil:adventure.smil/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BiznetKids.id" tvg-name="Biznet Kids" group-title="Indonesia - Biznet",Biznet Kids
+http://livestream.biznetvideo.net/biznet_kids/smil:kids.smil/index.m3u8
+
+#EXTINF:-1 tvg-id="BiznetLifestyle.id" tvg-name="Biznet Lifestyle" group-title="Indonesia - Biznet",Biznet Lifestyle
+http://livestream.biznetvideo.net/biznet_lifestyle/smil:lifestyle.smil/index.m3u8

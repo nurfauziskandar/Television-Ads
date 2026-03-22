@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Display</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/display.css') }}">
+</head>
+<body ondblclick="toggleFullscreen()">
+
+    <!-- Idle Screen -->
+    <div class="screen active" id="screen-idle">
+        <div class="idle-content">
+            <div class="idle-icon">
+                <i class="fa-solid fa-tower-broadcast"></i>
+            </div>
+            <div class="idle-clock" id="idle-clock">00:00</div>
+            <div class="idle-date" id="idle-date"></div>
+            <div class="idle-label">TV Control System</div>
+            <div class="idle-status" id="idle-status">Menghubungkan...</div>
+        </div>
+        <div class="idle-pulse"></div>
+    </div>
+
+    <!-- IPTV Screen -->
+    <div class="screen" id="screen-iptv">
+        <video id="iptv-video" autoplay playsinline></video>
+        <div class="channel-overlay" id="channel-overlay">
+            <div class="channel-overlay-logo" id="channel-overlay-logo"></div>
+            <div class="channel-overlay-info">
+                <div class="channel-overlay-name" id="channel-overlay-name"></div>
+                <div class="channel-overlay-group" id="channel-overlay-group"></div>
+            </div>
+        </div>
+        <div class="loading-indicator" id="iptv-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Memuat stream...</span>
+        </div>
+        <div class="error-indicator" id="iptv-error" style="display:none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="iptv-error-text">Gagal memuat stream</span>
+        </div>
+    </div>
+
+    <!-- Ads Screen -->
+    <div class="screen" id="screen-ads">
+        <div class="ad-layer" id="ad-layer-a">
+            <img class="ad-media" id="ad-img-a" style="display:none">
+            <video class="ad-media" id="ad-vid-a" autoplay playsinline style="display:none"></video>
+        </div>
+        <div class="ad-layer" id="ad-layer-b">
+            <img class="ad-media" id="ad-img-b" style="display:none">
+            <video class="ad-media" id="ad-vid-b" autoplay playsinline style="display:none"></video>
+        </div>
+        <div class="ad-progress" id="ad-progress">
+            <div class="ad-progress-bar" id="ad-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Connection Indicator -->
+    <div class="connection-indicator" id="connection-indicator">
+        <span class="conn-dot"></span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <script src="{{ url_for('static', filename='js/display.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TV Control{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-tower-broadcast"></i>
+                <span>TV Control</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/admin/" class="nav-item {% if page == 'dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/devices" class="nav-item {% if page == 'devices' %}active{% endif %}">
+                <i class="fa-solid fa-display"></i>
+                <span>Perangkat TV</span>
+            </a>
+            <a href="/admin/channels" class="nav-item {% if page == 'channels' %}active{% endif %}">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <span>Channel IPTV</span>
+            </a>
+            <a href="/admin/ads" class="nav-item {% if page == 'ads' %}active{% endif %}">
+                <i class="fa-solid fa-rectangle-ad"></i>
+                <span>Iklan</span>
+            </a>
+            <a href="/admin/playlists" class="nav-item {% if page == 'playlists' %}active{% endif %}">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Playlist</span>
+            </a>
+            <a href="/admin/control" class="nav-item {% if page == 'control' %}active{% endif %}">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Kontrol TV</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/display" target="_blank" class="nav-item">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>Buka Tampilan TV</span>
+            </a>
+            <div class="sidebar-status">
+                <span class="status-dot" id="sidebar-status-dot"></span>
+                <span id="sidebar-display-count">0 display terhubung</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1 class="page-title">{% block header %}{% endblock %}</h1>
+            </div>
+            <div class="page-actions">
+                {% block actions %}{% endblock %}
+                <div class="topbar-user">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>{{ session.admin_username }}</span>
+                    <form action="/logout" method="post" style="display:inline">
+                        <button type="submit" class="btn-icon" title="Logout">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

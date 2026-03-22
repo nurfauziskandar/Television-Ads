@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}Channel IPTV - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-satellite-dish"></i> Channel IPTV
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-secondary" onclick="openModal('import-modal')">
+    <i class="fa-solid fa-file-import"></i> Import M3U
+</button>
+<button class="btn btn-primary" onclick="openModal('channel-modal'); resetChannelForm();">
+    <i class="fa-solid fa-plus"></i> Tambah Channel
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body no-padding">
+        {% if channels %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:50px"></th>
+                        <th>Nama Channel</th>
+                        <th>Grup</th>
+                        <th>URL Stream</th>
+                        <th style="width:80px">Status</th>
+                        <th style="width:100px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="channels-tbody">
+                    {% for ch in channels %}
+                    <tr data-id="{{ ch.id }}">
+                        <td>
+                            {% if ch.logo_url %}
+                            <img src="{{ ch.logo_url }}" alt="" class="channel-logo-sm"
+                                 onerror="this.style.display='none'">
+                            {% else %}
+                            <div class="channel-logo-placeholder">
+                                <i class="fa-solid fa-tv"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="text-primary">{{ ch.name }}</td>
+                        <td><span class="badge">{{ ch.group }}</span></td>
+                        <td class="text-muted text-truncate" style="max-width:250px">
+                            {% if ch.source_type == 'local' %}
+                            <span class="badge badge-local">
+                                <i class="fa-solid fa-film"></i> Lokal
+                            </span>
+                            {% else %}
+                            {{ ch.url }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <label class="toggle">
+                                <input type="checkbox" {% if ch.is_active %}checked{% endif %}
+                                       onchange="toggleChannel({{ ch.id }}, this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-icon" title="Edit"
+                                        onclick="editChannel({{ ch.id }}, '{{ ch.name }}', '{{ ch.url }}', '{{ ch.logo_url }}', '{{ ch.group }}')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon danger" title="Hapus"
+                                        onclick="deleteChannel({{ ch.id }}, '{{ ch.name }}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <h3>Belum ada channel</h3>
+            <p>Tambahkan channel IPTV secara manual atau import dari file M3U.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add/Edit Channel Modal -->
+<div class="modal-overlay" id="channel-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="channel-modal-title">Tambah Channel</h3>
+            <button class="btn-icon" onclick="closeModal('channel-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="channel-edit-id">
+
+            <!-- Source type toggle (only for add mode) -->
+            <div class="form-group" id="source-type-group">
+                <label class="form-label">Sumber</label>
+                <div class="source-toggle">
+                    <button type="button" class="source-btn active" data-source="url"
+                            onclick="switchSource('url')">
+                        <i class="fa-solid fa-link"></i> URL Eksternal
+                    </button>
+                    <button type="button" class="source-btn" data-source="local"
+                            onclick="switchSource('local')">
+                        <i class="fa-solid fa-film"></i> Video Lokal
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nama Channel</label>
+                <input type="text" class="form-control" id="channel-name" placeholder="Contoh: RCTI">
+            </div>
+
+            <!-- URL section -->
+            <div id="section-url">
+                <div class="form-group">
+                    <label class="form-label">URL Stream</label>
+                    <input type="text" class="form-control" id="channel-url" placeholder="http://...m3u8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">URL Logo (opsional)</label>
+                    <input type="text" class="form-control" id="channel-logo" placeholder="http://...logo.png">
+                </div>
+            </div>
+
+            <!-- Local video section -->
+            <div id="section-local" style="display:none">
+                <div class="form-group">
+                    <label class="form-label">File Video</label>
+                    <div class="dropzone" id="ch-dropzone"
+                         onclick="document.getElementById('ch-file-input').click()">
+                        <i class="fa-solid fa-film"></i>
+                        <p>Klik atau seret file video</p>
+                        <span class="dropzone-hint">MP4, WEBM, MOV, MKV (Maks 500MB)</span>
+                        <input type="file" id="ch-file-input" hidden
+                               accept="video/*" onchange="handleChannelFile(this)">
+                    </div>
+                    <div class="file-preview" id="ch-file-preview" style="display:none">
+                        <div class="file-preview-info">
+                            <i class="fa-solid fa-film"></i>
+                            <span id="ch-file-name"></span>
+                            <button class="btn-icon" onclick="clearChannelFile()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Grup</label>
+                <input type="text" class="form-control" id="channel-group" placeholder="Umum" value="Umum">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('channel-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveChannel()" id="ch-save-btn">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Import M3U Modal -->
+<div class="modal-overlay" id="import-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Import M3U</h3>
+            <button class="btn-icon" onclick="closeModal('import-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">URL Playlist M3U</label>
+                <input type="text" class="form-control" id="m3u-url" placeholder="http://...playlist.m3u">
+            </div>
+            <div class="divider-text">atau</div>
+            <div class="form-group">
+                <label class="form-label">Paste Konten M3U</label>
+                <textarea class="form-control" id="m3u-text" rows="8"
+                          placeholder="#EXTM3U&#10;#EXTINF:-1,Channel Name&#10;http://stream-url"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('import-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="importM3U()" id="import-btn">
+                <i class="fa-solid fa-file-import"></i> Import
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Hapus Channel</h3>
+            <button class="btn-icon" onclick="closeModal('delete-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Yakin ingin menghapus channel <strong id="delete-channel-name"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('delete-modal')">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteChannel()" id="confirm-delete-btn">
+                <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deleteChannelId = null;
+let selectedChannelFile = null;
+let currentSourceType = 'url';
+
+function switchSource(type) {
+    currentSourceType = type;
+    document.querySelectorAll('.source-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.source === type);
+    });
+    document.getElementById('section-url').style.display = type === 'url' ? 'block' : 'none';
+    document.getElementById('section-local').style.display = type === 'local' ? 'block' : 'none';
+}
+
+function handleChannelFile(input) {
+    if (!input.files.length) return;
+    selectedChannelFile = input.files[0];
+    document.getElementById('ch-file-preview').style.display = 'flex';
+    document.getElementById('ch-file-name').textContent = selectedChannelFile.name;
+    if (!document.getElementById('channel-name').value) {
+        document.getElementById('channel-name').value =
+            selectedChannelFile.name.replace(/\.[^.]+$/, '');
+    }
+}
+
+function clearChannelFile() {
+    selectedChannelFile = null;
+    document.getElementById('ch-file-preview').style.display = 'none';
+    document.getElementById('ch-file-input').value = '';
+}
+
+function resetChannelForm() {
+    document.getElementById('channel-modal-title').textContent = 'Tambah Channel';
+    document.getElementById('channel-edit-id').value = '';
+    document.getElementById('channel-name').value = '';
+    document.getElementById('channel-url').value = '';
+    document.getElementById('channel-logo').value = '';
+    document.getElementById('channel-group').value = 'Umum';
+    document.getElementById('source-type-group').style.display = 'block';
+    clearChannelFile();
+    switchSource('url');
+}
+
+function editChannel(id, name, url, logo, group) {
+    document.getElementById('channel-modal-title').textContent = 'Edit Channel';
+    document.getElementById('channel-edit-id').value = id;
+    document.getElementById('channel-name').value = name;
+    document.getElementById('channel-url').value = url;
+    document.getElementById('channel-logo').value = logo;
+    document.getElementById('channel-group').value = group;
+    // Edit: hanya tampilkan section URL, sembunyikan source toggle
+    document.getElementById('source-type-group').style.display = 'none';
+    document.getElementById('section-url').style.display = 'block';
+    document.getElementById('section-local').style.display = 'none';
+    openModal('channel-modal');
+}
+
+async function saveChannel() {
+    const id = document.getElementById('channel-edit-id').value;
+    const btn = document.getElementById('ch-save-btn');
+
+    if (id) {
+        // Edit mode — hanya URL channel
+        const data = {
+            name: document.getElementById('channel-name').value.trim(),
+            url: document.getElementById('channel-url').value.trim(),
+            logo_url: document.getElementById('channel-logo').value.trim(),
+            group: document.getElementById('channel-group').value.trim() || 'Umum',
+        };
+        if (!data.name) { showToast('Nama wajib diisi', 'error'); return; }
+        try {
+            await api('/api/channels/' + id, { method: 'PUT', body: JSON.stringify(data) });
+            showToast('Channel berhasil diperbarui', 'success');
+            closeModal('channel-modal');
+            setTimeout(function() { location.reload(); }, 500);
+        } catch (e) {
+            showToast('Gagal menyimpan: ' + e.message, 'error');
+        }
+        return;
+    }
+
+    // Add mode
+    if (currentSourceType === 'url') {
+        const data = {
+            name: document.getElementById('channel-name').value.trim(),
+            url: document.getElementById('channel-url').value.trim(),
+            logo_url: document.getElementById('channel-logo').value.trim(),
+            group: document.getElementById('channel-group').value.trim() || 'Umum',
+        };
+        if (!data.name || !data.url) {
+            showToast('Nama dan URL wajib diisi', 'error');
+            return;
+        }
+        try {
+            await api('/api/channels', { method: 'POST', body: JSON.stringify(data) });
+            showToast('Channel berhasil ditambahkan', 'success');
+            closeModal('channel-modal');
+            setTimeout(function() { location.reload(); }, 500);
+        } catch (e) {
+            showToast('Gagal menyimpan: ' + e.message, 'error');
+        }
+    } else {
+        // Local video upload
+        if (!selectedChannelFile) {
+            showToast('Pilih file video terlebih dahulu', 'error');
+            return;
+        }
+        const name = document.getElementById('channel-name').value.trim();
+        if (!name) { showToast('Nama channel wajib diisi', 'error'); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengupload...';
+
+        const formData = new FormData();
+        formData.append('file', selectedChannelFile);
+        formData.append('name', name);
+        formData.append('group', document.getElementById('channel-group').value.trim() || 'Lokal');
+
+        try {
+            const resp = await fetch('/api/channels/upload', { method: 'POST', body: formData });
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.error || 'Upload gagal');
+            }
+            showToast('Channel lokal berhasil ditambahkan', 'success');
+            closeModal('channel-modal');
+            setTimeout(function() { location.reload(); }, 500);
+        } catch (e) {
+            showToast('Gagal upload: ' + e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Simpan';
+        }
+    }
+}
+
+function deleteChannel(id, name) {
+    deleteChannelId = id;
+    document.getElementById('delete-channel-name').textContent = name;
+    openModal('delete-modal');
+}
+
+async function confirmDeleteChannel() {
+    if (!deleteChannelId) return;
+    try {
+        await api('/api/channels/' + deleteChannelId, { method: 'DELETE' });
+        showToast('Channel berhasil dihapus', 'success');
+        closeModal('delete-modal');
+        const row = document.querySelector('tr[data-id="' + deleteChannelId + '"]');
+        if (row) row.remove();
+        deleteChannelId = null;
+    } catch (e) {
+        showToast('Gagal menghapus: ' + e.message, 'error');
+    }
+}
+
+async function toggleChannel(id, active) {
+    try {
+        await api('/api/channels/' + id, {
+            method: 'PUT',
+            body: JSON.stringify({ is_active: active }),
+        });
+    } catch (e) {
+        showToast('Gagal mengubah status', 'error');
+    }
+}
+
+async function importM3U() {
+    const url = document.getElementById('m3u-url').value.trim();
+    const text = document.getElementById('m3u-text').value.trim();
+    if (!url && !text) {
+        showToast('Masukkan URL atau paste konten M3U', 'error');
+        return;
+    }
+    const btn = document.getElementById('import-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengimport...';
+    try {
+        const res = await api('/api/channels/import', {
+            method: 'POST',
+            body: JSON.stringify({ url: url, text: text }),
+        });
+        showToast('Berhasil import ' + res.added + ' channel dari ' + res.total_parsed + ' yang ditemukan', 'success');
+        closeModal('import-modal');
+        setTimeout(function() { location.reload(); }, 800);
+    } catch (e) {
+        showToast('Gagal import: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-file-import"></i> Import';
+    }
+}
+</script>
+{% endblock %}
