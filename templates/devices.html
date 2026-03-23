@@ -332,11 +332,32 @@ async function regenerateToken(id) {
 
 function copyDisplayUrl(token) {
     const url = window.location.origin + '/display?token=' + token;
-    navigator.clipboard.writeText(url).then(function() {
-        showToast('URL Display disalin: ' + url, 'success');
-    }).catch(function() {
-        showToast('URL: ' + url, 'info');
-    });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            showToast('URL Display disalin: ' + url, 'success');
+        }).catch(function() {
+            fallbackCopy(url);
+        });
+    } else {
+        fallbackCopy(url);
+    }
+}
+
+function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showToast('URL Display disalin: ' + text, 'success');
+    } catch (e) {
+        showToast('URL: ' + text, 'info');
+    }
+    document.body.removeChild(textarea);
 }
 
 // --- Assignment ---
