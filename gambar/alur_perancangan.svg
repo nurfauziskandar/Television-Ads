@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1400 870" width="1400" height="870" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    text { font-family: 'Segoe UI', -apple-system, Arial, sans-serif; }
+  </style>
+  <marker id="a-blue" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="8" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#4c7bf5"/>
+  </marker>
+  <marker id="a-orange" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="8" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#f0883e"/>
+  </marker>
+  <marker id="a-green" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="8" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#2dd4a0"/>
+  </marker>
+  <marker id="a-purple" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="8" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#bc8cff"/>
+  </marker>
+  <marker id="a-red" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="8" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#e5534b"/>
+  </marker>
+</defs>
+
+<!-- Background -->
+<rect width="1400" height="870" fill="#0d1117"/>
+
+<!-- Subtle grid dots -->
+<pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+  <circle cx="20" cy="20" r="1" fill="#1c2128"/>
+</pattern>
+<rect width="1400" height="870" fill="url(#dots)"/>
+
+<!-- ========== TITLE ========== -->
+<text x="700" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="#e6edf3">Alur Perancangan — Television Ads System</text>
+<text x="700" y="65" text-anchor="middle" font-size="12" fill="#6e7681">Arsitektur Sistem Manajemen Iklan &amp; IPTV Berbasis Web  •  Flask + Socket.IO + SQLite</text>
+
+
+<!-- ============================================================
+     ADMIN PANEL BOX  x=30 y=88 w=275 h=415
+     ============================================================ -->
+<!-- Shadow -->
+<rect x="34" y="92" width="275" height="415" rx="12" fill="#000" opacity="0.35"/>
+<!-- Body -->
+<rect x="30" y="88" width="275" height="415" rx="12" fill="#161b22" stroke="#2450a4" stroke-width="1.5"/>
+<!-- Header -->
+<rect x="30" y="88" width="275" height="42" rx="12" fill="#1c3166"/>
+<rect x="30" y="118" width="275" height="12" fill="#1c3166"/>
+<text x="167" y="114" text-anchor="middle" font-size="14" font-weight="700" fill="#79b8ff">&#9881; Admin Panel</text>
+
+<!-- Halaman section -->
+<text x="50" y="150" font-size="11" font-weight="600" fill="#4c7bf5">Halaman</text>
+<text x="50" y="167" font-size="10" fill="#8b949e">&#9656;  /login  &amp;  /setup</text>
+<text x="50" y="183" font-size="10" fill="#8b949e">&#9656;  /admin/  —  Dashboard &amp; statistik</text>
+<text x="50" y="199" font-size="10" fill="#8b949e">&#9656;  /admin/channels  —  Channel IPTV</text>
+<text x="50" y="215" font-size="10" fill="#8b949e">&#9656;  /admin/ads  —  Upload iklan</text>
+<text x="50" y="231" font-size="10" fill="#8b949e">&#9656;  /admin/playlists  —  Susun playlist</text>
+<text x="50" y="247" font-size="10" fill="#8b949e">&#9656;  /admin/devices  —  Kelola TV &amp; token</text>
+<text x="50" y="263" font-size="10" fill="#8b949e">&#9656;  /admin/control  —  Kontrol live per TV</text>
+
+<line x1="48" y1="277" x2="287" y2="277" stroke="#21262d" stroke-width="1"/>
+
+<!-- WebSocket Admin section -->
+<text x="50" y="297" font-size="11" font-weight="600" fill="#f0883e">WebSocket  /admin</text>
+<text x="50" y="315" font-size="10" fill="#8b949e">&#9656;  Terima: display_update (realtime)</text>
+<text x="50" y="331" font-size="10" fill="#8b949e">&#9656;  Terima: device_status_update</text>
+<text x="50" y="347" font-size="10" fill="#8b949e">&#9656;  Membutuhkan login session aktif</text>
+
+<line x1="48" y1="361" x2="287" y2="361" stroke="#21262d" stroke-width="1"/>
+
+<!-- Auth section -->
+<text x="50" y="381" font-size="11" font-weight="600" fill="#bc8cff">Autentikasi</text>
+<text x="50" y="399" font-size="10" fill="#8b949e">&#9656;  Session Flask (30 hari)</text>
+<text x="50" y="415" font-size="10" fill="#8b949e">&#9656;  Werkzeug password hash</text>
+<text x="50" y="431" font-size="10" fill="#8b949e">&#9656;  Token unik per perangkat TV</text>
+<text x="50" y="447" font-size="10" fill="#8b949e">&#9656;  Token bisa dikustomisasi admin</text>
+<text x="50" y="463" font-size="10" fill="#8b949e">&#9656;  Validasi: huruf/angka/dash/underscore</text>
+<text x="50" y="479" font-size="10" fill="#8b949e">&#9656;  Max 64 karakter, unik per device</text>
+
+
+<!-- ============================================================
+     FLASK SERVER BOX  x=480 y=88 w=440 h=525
+     ============================================================ -->
+<rect x="484" y="92" width="440" height="525" rx="12" fill="#000" opacity="0.35"/>
+<rect x="480" y="88" width="440" height="525" rx="12" fill="#161b22" stroke="#1d3a5a" stroke-width="1.5"/>
+<rect x="480" y="88" width="440" height="42" rx="12" fill="#162035"/>
+<rect x="480" y="118" width="440" height="12" fill="#162035"/>
+<text x="700" y="114" text-anchor="middle" font-size="14" font-weight="700" fill="#58a6ff">&#9881; Flask Server  (port 8000)</text>
+
+<!-- REST API -->
+<text x="500" y="150" font-size="11" font-weight="600" fill="#2dd4a0">REST API  (login required)</text>
+<text x="500" y="167" font-size="10" fill="#8b949e">&#9656;  GET/POST  /api/channels  +  /upload  +  /import</text>
+<text x="500" y="183" font-size="10" fill="#8b949e">&#9656;  GET/POST/PUT/DELETE  /api/ads</text>
+<text x="500" y="199" font-size="10" fill="#8b949e">&#9656;  GET/POST/PUT/DELETE  /api/playlists  +  /items  +  /reorder</text>
+<text x="500" y="215" font-size="10" fill="#8b949e">&#9656;  GET/POST/PUT/DELETE  /api/devices</text>
+<text x="500" y="231" font-size="10" fill="#8b949e">&#9656;  POST  /api/devices/{id}/token  (acak atau kustom)</text>
+<text x="500" y="247" font-size="10" fill="#8b949e">&#9656;  POST  /api/display/command  (play_channel / play_ads / idle / volume)</text>
+<text x="500" y="263" font-size="10" fill="#8b949e">&#9656;  GET  /api/display/status  —  daftar display online</text>
+
+<line x1="498" y1="275" x2="902" y2="275" stroke="#21262d" stroke-width="1"/>
+
+<!-- WebSocket -->
+<text x="500" y="295" font-size="11" font-weight="600" fill="#f0883e">WebSocket  —  Socket.IO</text>
+<text x="500" y="313" font-size="10" fill="#8b949e">&#9656;  Namespace /display  —  event: register, status  (token auth)</text>
+<text x="500" y="329" font-size="10" fill="#8b949e">&#9656;  Namespace /admin  —  event: display_update, device_status_update</text>
+<text x="500" y="345" font-size="10" fill="#8b949e">&#9656;  Room per device: "device_&lt;token&gt;"  untuk targeting spesifik</text>
+<text x="500" y="361" font-size="10" fill="#8b949e">&#9656;  Reconnect otomatis + exponential backoff di sisi display</text>
+
+<line x1="498" y1="373" x2="902" y2="373" stroke="#21262d" stroke-width="1"/>
+
+<!-- Stream Proxy -->
+<text x="500" y="393" font-size="11" font-weight="600" fill="#e5534b">Stream Proxy  (CORS bypass)</text>
+<text x="500" y="411" font-size="10" fill="#8b949e">&#9656;  GET /api/proxy/stream?url=...  —  proxy M3U8 &amp; segmen</text>
+<text x="500" y="427" font-size="10" fill="#8b949e">&#9656;  Rewrite URL di manifest agar setiap segmen melewati proxy</text>
+<text x="500" y="443" font-size="10" fill="#8b949e">&#9656;  DASH .mpd diakses langsung tanpa proxy</text>
+
+<line x1="498" y1="455" x2="902" y2="455" stroke="#21262d" stroke-width="1"/>
+
+<!-- Models -->
+<text x="500" y="475" font-size="11" font-weight="600" fill="#bc8cff">Model  —  SQLAlchemy ORM</text>
+<text x="500" y="493" font-size="10" fill="#8b949e">AdminUser  •  Channel  •  Ad  •  Playlist  •  PlaylistItem</text>
+<text x="500" y="509" font-size="10" fill="#8b949e">Device  •  DeviceChannel  •  DevicePlaylist</text>
+
+<line x1="498" y1="521" x2="902" y2="521" stroke="#21262d" stroke-width="1"/>
+
+<!-- Config/Stack -->
+<text x="500" y="541" font-size="11" font-weight="600" fill="#6e7681">Stack &amp; Konfigurasi</text>
+<text x="500" y="557" font-size="10" fill="#8b949e">Flask • Flask-SQLAlchemy • Flask-SocketIO • Werkzeug • requests</text>
+<text x="500" y="573" font-size="10" fill="#8b949e">SQLite  •  CORS allow all  •  Max upload 500MB  •  Threading mode</text>
+<text x="500" y="589" font-size="10" fill="#8b949e">.secret_key persistent  •  Port 8000  •  Session 30 hari</text>
+
+
+<!-- ============================================================
+     TV DISPLAY BOX  x=1100 y=88 w=275 h=470
+     ============================================================ -->
+<rect x="1104" y="92" width="275" height="470" rx="12" fill="#000" opacity="0.35"/>
+<rect x="1100" y="88" width="275" height="470" rx="12" fill="#161b22" stroke="#1a4a35" stroke-width="1.5"/>
+<rect x="1100" y="88" width="275" height="42" rx="12" fill="#122a1e"/>
+<rect x="1100" y="118" width="275" height="12" fill="#122a1e"/>
+<text x="1237" y="114" text-anchor="middle" font-size="14" font-weight="700" fill="#3fb950">&#128250; TV Display Client</text>
+
+<text x="1118" y="148" font-size="10" fill="#6e7681">Akses:  /display?token=&lt;token&gt;</text>
+<line x1="1116" y1="158" x2="1357" y2="158" stroke="#21262d" stroke-width="1"/>
+
+<!-- Idle Screen -->
+<text x="1118" y="178" font-size="11" font-weight="600" fill="#8b949e">Layar Idle</text>
+<text x="1118" y="195" font-size="10" fill="#8b949e">&#9656;  Jam real-time &amp; tanggal (bahasa Indonesia)</text>
+<text x="1118" y="211" font-size="10" fill="#8b949e">&#9656;  Status koneksi WebSocket</text>
+<text x="1118" y="227" font-size="10" fill="#8b949e">&#9656;  Token badge di bawah layar</text>
+<text x="1118" y="243" font-size="10" fill="#8b949e">&#9656;  Pulsing gradient background</text>
+
+<line x1="1116" y1="254" x2="1357" y2="254" stroke="#21262d" stroke-width="1"/>
+
+<!-- IPTV Screen -->
+<text x="1118" y="274" font-size="11" font-weight="600" fill="#58a6ff">Layar IPTV</text>
+<text x="1118" y="291" font-size="10" fill="#8b949e">&#9656;  HLS.js untuk stream .m3u8</text>
+<text x="1118" y="307" font-size="10" fill="#8b949e">&#9656;  dash.js untuk stream .mpd</text>
+<text x="1118" y="323" font-size="10" fill="#8b949e">&#9656;  Native HTML5 untuk video lokal (loop)</text>
+<text x="1118" y="339" font-size="10" fill="#8b949e">&#9656;  Overlay channel (logo, nama, grup)</text>
+<text x="1118" y="355" font-size="10" fill="#8b949e">&#9656;  Auto-hide overlay setelah 5 detik</text>
+
+<line x1="1116" y1="366" x2="1357" y2="366" stroke="#21262d" stroke-width="1"/>
+
+<!-- Ads Screen -->
+<text x="1118" y="386" font-size="11" font-weight="600" fill="#f0883e">Layar Iklan</text>
+<text x="1118" y="403" font-size="10" fill="#8b949e">&#9656;  Double-layer crossfade (0.8 detik)</text>
+<text x="1118" y="419" font-size="10" fill="#8b949e">&#9656;  Gambar: durasi configurable per iklan</text>
+<text x="1118" y="435" font-size="10" fill="#8b949e">&#9656;  Video: tunggu sampai selesai putar</text>
+<text x="1118" y="451" font-size="10" fill="#8b949e">&#9656;  Progress bar di bawah layar</text>
+<text x="1118" y="467" font-size="10" fill="#8b949e">&#9656;  Loop playlist secara tak terbatas</text>
+<text x="1118" y="483" font-size="10" fill="#8b949e">&#9656;  Volume via WebSocket command</text>
+<text x="1118" y="499" font-size="10" fill="#8b949e">&#9656;  Double-click layar = toggle fullscreen</text>
+<text x="1118" y="515" font-size="10" fill="#8b949e">&#9656;  Dot indikator koneksi (merah/hijau)</text>
+<text x="1118" y="531" font-size="10" fill="#8b949e">&#9656;  Reconnect otomatis jika terputus</text>
+
+
+<!-- ============================================================
+     SQLITE DB BOX  x=310 y=668 w=240 h=160
+     ============================================================ -->
+<rect x="314" y="672" width="240" height="160" rx="12" fill="#000" opacity="0.35"/>
+<rect x="310" y="668" width="240" height="160" rx="12" fill="#161b22" stroke="#3a1f6e" stroke-width="1.5"/>
+<rect x="310" y="668" width="240" height="40" rx="12" fill="#1f1035"/>
+<rect x="310" y="695" width="240" height="13" fill="#1f1035"/>
+<text x="430" y="693" text-anchor="middle" font-size="12" font-weight="700" fill="#bc8cff">&#128451; SQLite Database</text>
+<text x="328" y="723" font-size="10" fill="#8b949e">tvads.db  (file lokal)</text>
+<text x="328" y="739" font-size="10" fill="#8b949e">AdminUser  •  Channel  •  Ad</text>
+<text x="328" y="755" font-size="10" fill="#8b949e">Playlist  •  PlaylistItem</text>
+<text x="328" y="771" font-size="10" fill="#8b949e">Device  •  DeviceChannel</text>
+<text x="328" y="787" font-size="10" fill="#8b949e">DevicePlaylist</text>
+<text x="328" y="810" font-size="10" fill="#484f58">ORM: Flask-SQLAlchemy</text>
+
+
+<!-- ============================================================
+     FILE STORAGE BOX  x=620 y=668 w=240 h=160
+     ============================================================ -->
+<rect x="624" y="672" width="240" height="160" rx="12" fill="#000" opacity="0.35"/>
+<rect x="620" y="668" width="240" height="160" rx="12" fill="#161b22" stroke="#1a4a35" stroke-width="1.5"/>
+<rect x="620" y="668" width="240" height="40" rx="12" fill="#122a1e"/>
+<rect x="620" y="695" width="240" height="13" fill="#122a1e"/>
+<text x="740" y="693" text-anchor="middle" font-size="12" font-weight="700" fill="#2dd4a0">&#128193; File Storage</text>
+<text x="638" y="723" font-size="10" fill="#8b949e">/static/uploads/ads/</text>
+<text x="638" y="739" font-size="10" fill="#8b949e">  PNG, JPG, GIF, WEBP, MP4, WEBM, MOV</text>
+<text x="638" y="755" font-size="10" fill="#8b949e">/static/uploads/channels/</text>
+<text x="638" y="771" font-size="10" fill="#8b949e">  MP4, WEBM, MOV, AVI, MKV</text>
+<text x="638" y="787" font-size="10" fill="#8b949e">/static/js/  —  hls.min.js, dash.all.min.js</text>
+<text x="638" y="810" font-size="10" fill="#484f58">Max upload: 500 MB per file</text>
+
+
+<!-- ============================================================
+     EXTERNAL IPTV BOX  x=1100 y=624 w=275 h=130
+     ============================================================ -->
+<rect x="1104" y="628" width="275" height="130" rx="12" fill="#000" opacity="0.35"/>
+<rect x="1100" y="624" width="275" height="130" rx="12" fill="#161b22" stroke="#5a1f1f" stroke-width="1.5"/>
+<rect x="1100" y="624" width="275" height="40" rx="12" fill="#2a1010"/>
+<rect x="1100" y="651" width="275" height="13" fill="#2a1010"/>
+<text x="1237" y="649" text-anchor="middle" font-size="12" font-weight="700" fill="#f85149">&#127760; Sumber IPTV Eksternal</text>
+<text x="1118" y="679" font-size="10" fill="#8b949e">&#9656;  HLS / M3U8 stream (via proxy Flask)</text>
+<text x="1118" y="695" font-size="10" fill="#8b949e">&#9656;  MPEG-DASH / MPD (akses langsung)</text>
+<text x="1118" y="711" font-size="10" fill="#8b949e">&#9656;  Import M3U playlist (URL / upload)</text>
+<text x="1118" y="730" font-size="10" fill="#484f58">list_iptv.txt — channel Indonesia preloaded</text>
+
+
+<!-- ============================================================
+     ARROWS
+     ============================================================ -->
+
+<!-- 1. Admin → Flask: HTTP Request (atas) -->
+<path d="M307,200 L478,200" stroke="#4c7bf5" stroke-width="2" fill="none" marker-end="url(#a-blue)"/>
+<text x="392" y="194" text-anchor="middle" font-size="10" fill="#4c7bf5">HTTP Request</text>
+
+<!-- 2. Flask → Admin: JSON Response (bawah) -->
+<path d="M478,218 L307,218" stroke="#4c7bf5" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#a-blue)"/>
+<text x="392" y="234" text-anchor="middle" font-size="10" fill="#4c7bf5">JSON Response</text>
+
+<!-- 3. Admin → Flask: WebSocket /admin (atas) -->
+<path d="M307,355 L478,355" stroke="#f0883e" stroke-width="2" fill="none" marker-end="url(#a-orange)"/>
+<text x="392" y="349" text-anchor="middle" font-size="10" fill="#f0883e">WS /admin (emit)</text>
+
+<!-- 4. Flask → Admin: display_update (bawah) -->
+<path d="M478,373 L307,373" stroke="#f0883e" stroke-width="2" fill="none" marker-end="url(#a-orange)"/>
+<text x="392" y="390" text-anchor="middle" font-size="10" fill="#f0883e">display_update</text>
+
+<!-- 5. Flask → TV Display: command via WebSocket -->
+<path d="M922,290 L1098,290" stroke="#2dd4a0" stroke-width="2" fill="none" marker-end="url(#a-green)"/>
+<text x="1010" y="284" text-anchor="middle" font-size="10" fill="#2dd4a0">command (play/idle/volume)</text>
+
+<!-- 6. TV Display → Flask: register + status -->
+<path d="M1098,310 L922,310" stroke="#2dd4a0" stroke-width="2" fill="none" marker-end="url(#a-green)"/>
+<text x="1010" y="326" text-anchor="middle" font-size="10" fill="#2dd4a0">register + status (WS /display)</text>
+
+<!-- 7. Flask → SQLite: SQLAlchemy -->
+<path d="M598,615 L428,667" stroke="#bc8cff" stroke-width="2" fill="none" marker-end="url(#a-purple)"/>
+<text x="483" y="638" text-anchor="middle" font-size="10" fill="#bc8cff">SQLAlchemy</text>
+
+<!-- 8. Flask → File Storage: store/serve -->
+<path d="M764,615 L744,667" stroke="#2dd4a0" stroke-width="2" fill="none" marker-end="url(#a-green)"/>
+<text x="800" y="638" text-anchor="middle" font-size="10" fill="#2dd4a0">store / serve</text>
+
+<!-- 9. TV Display → External IPTV: stream fetch -->
+<path d="M1237,560 L1237,623" stroke="#e5534b" stroke-width="2" fill="none" marker-end="url(#a-red)"/>
+<text x="1295" y="600" font-size="10" fill="#e5534b">stream fetch</text>
+
+<!-- 10. TV Display → File Storage: load ads (curved) -->
+<path d="M1098,440 C950,520 870,590 862,667" stroke="#f0883e" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#a-orange)"/>
+<text x="975" y="568" font-size="10" fill="#f0883e">load ads / video</text>
+
+<!-- 11. Flask proxy → External IPTV (dotted) -->
+<path d="M922,415 C1030,415 1060,560 1098,670" stroke="#e5534b" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#a-red)"/>
+<text x="1042" y="500" font-size="10" fill="#e5534b">proxy fetch</text>
+
+
+<!-- ============================================================
+     LEGEND
+     ============================================================ -->
+<rect x="30" y="800" width="700" height="52" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+<text x="52" y="820" font-size="11" font-weight="600" fill="#6e7681">Legenda:</text>
+
+<!-- HTTP -->
+<line x1="120" y1="818" x2="152" y2="818" stroke="#4c7bf5" stroke-width="2"/>
+<path d="M148,815 L156,818 L148,821 Z" fill="#4c7bf5"/>
+<text x="161" y="822" font-size="10" fill="#4c7bf5">HTTP / REST</text>
+
+<!-- WebSocket Admin -->
+<line x1="240" y1="818" x2="272" y2="818" stroke="#f0883e" stroke-width="2"/>
+<path d="M268,815 L276,818 L268,821 Z" fill="#f0883e"/>
+<text x="281" y="822" font-size="10" fill="#f0883e">WebSocket /admin</text>
+
+<!-- WebSocket Display -->
+<line x1="385" y1="818" x2="417" y2="818" stroke="#2dd4a0" stroke-width="2"/>
+<path d="M413,815 L421,818 L413,821 Z" fill="#2dd4a0"/>
+<text x="426" y="822" font-size="10" fill="#2dd4a0">WebSocket /display</text>
+
+<!-- DB -->
+<line x1="543" y1="818" x2="575" y2="818" stroke="#bc8cff" stroke-width="2"/>
+<path d="M571,815 L579,818 L571,821 Z" fill="#bc8cff"/>
+<text x="584" y="822" font-size="10" fill="#bc8cff">Database ORM</text>
+
+<!-- Stream -->
+<line x1="120" y1="840" x2="152" y2="840" stroke="#e5534b" stroke-width="2"/>
+<path d="M148,837 L156,840 L148,843 Z" fill="#e5534b"/>
+<text x="161" y="844" font-size="10" fill="#e5534b">Stream / Proxy</text>
+
+<!-- Load file dashed -->
+<line x1="240" y1="840" x2="272" y2="840" stroke="#f0883e" stroke-width="1.5" stroke-dasharray="4,2"/>
+<path d="M268,837 L276,840 L268,843 Z" fill="#f0883e"/>
+<text x="281" y="844" font-size="10" fill="#f0883e">Load file (ads / video)</text>
+
+<!-- HTTP dashed -->
+<line x1="393" y1="840" x2="425" y2="840" stroke="#4c7bf5" stroke-width="1.5" stroke-dasharray="4,2"/>
+<path d="M421,837 L429,840 L421,843 Z" fill="#4c7bf5"/>
+<text x="434" y="844" font-size="10" fill="#4c7bf5">Response / aliran balik</text>
+
+</svg>

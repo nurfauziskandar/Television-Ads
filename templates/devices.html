@@ -62,6 +62,10 @@
                 <span class="device-token-text" id="token-text-{{ dev.id }}">
                     {{ dev.token[:8] }}...{{ dev.token[-8:] }}
                 </span>
+                <button class="btn-icon sm" title="Edit Token"
+                        onclick="openEditTokenModal({{ dev.id }}, '{{ dev.token }}')">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
             </div>
         </div>
 
@@ -203,6 +207,40 @@
     </div>
 </div>
 
+<!-- Edit Token Modal -->
+<div class="modal-overlay" id="edit-token-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Edit Token</h3>
+            <button class="btn-icon" onclick="closeModal('edit-token-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-token-device-id">
+            <div class="form-group">
+                <label class="form-label">Token Kustom</label>
+                <input type="text" class="form-control" id="edit-token-value"
+                       placeholder="Contoh: tv-lobby, display01, ruang-rapat"
+                       autocomplete="off" spellcheck="false">
+                <small style="color:var(--text-muted);margin-top:6px;display:block">
+                    Huruf, angka, <code>-</code> dan <code>_</code> saja. Minimal 4 karakter.
+                </small>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="generateRandomToken()">
+                <i class="fa-solid fa-rotate"></i> Acak
+            </button>
+            <div style="flex:1"></div>
+            <button class="btn btn-ghost" onclick="closeModal('edit-token-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveCustomToken()">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Device Modal -->
 <div class="modal-overlay" id="delete-device-modal">
     <div class="modal modal-sm">
@@ -320,10 +358,47 @@ async function confirmDeleteDevice() {
 }
 
 async function regenerateToken(id) {
-    if (!confirm('Buat token baru? Display yang sedang terhubung akan terputus.')) return;
+    if (!confirm('Buat token acak baru? Display yang sedang terhubung akan terputus.')) return;
     try {
-        const res = await api('/api/devices/' + id + '/token', { method: 'POST' });
+        await api('/api/devices/' + id + '/token', { method: 'POST' });
         showToast('Token baru berhasil dibuat', 'success');
+        setTimeout(function() { location.reload(); }, 500);
+    } catch (e) {
+        showToast('Gagal: ' + e.message, 'error');
+    }
+}
+
+function openEditTokenModal(id, currentToken) {
+    document.getElementById('edit-token-device-id').value = id;
+    document.getElementById('edit-token-value').value = currentToken;
+    openModal('edit-token-modal');
+    setTimeout(function() {
+        const input = document.getElementById('edit-token-value');
+        input.focus();
+        input.select();
+    }, 100);
+}
+
+function generateRandomToken() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < 32; i++) {
+        token += chars[Math.floor(Math.random() * chars.length)];
+    }
+    document.getElementById('edit-token-value').value = token;
+}
+
+async function saveCustomToken() {
+    const id = document.getElementById('edit-token-device-id').value;
+    const token = document.getElementById('edit-token-value').value.trim();
+    if (!token) { showToast('Token tidak boleh kosong', 'error'); return; }
+    try {
+        await api('/api/devices/' + id + '/token', {
+            method: 'POST',
+            body: JSON.stringify({ token: token }),
+        });
+        showToast('Token berhasil diperbarui', 'success');
+        closeModal('edit-token-modal');
         setTimeout(function() { location.reload(); }, 500);
     } catch (e) {
         showToast('Gagal: ' + e.message, 'error');

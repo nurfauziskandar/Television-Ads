@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 700 980" width="700" height="980" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>text { font-family: 'Segoe UI', Arial, sans-serif; }</style>
+  <filter id="sh" x="-8%" y="-8%" width="120%" height="120%">
+    <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#0000001a"/>
+  </filter>
+  <marker id="a"  viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#475569"/>
+  </marker>
+  <marker id="ar" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#ef4444"/>
+  </marker>
+  <marker id="ag" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#16a34a"/>
+  </marker>
+</defs>
+
+<!-- Latar belakang -->
+<rect width="700" height="920" fill="#ffffff"/>
+<rect x="1" y="1" width="698" height="918" rx="6" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- ── Judul ── -->
+<text x="350" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">Flowchart Sistem — Television Ads</text>
+<line x1="50" y1="44" x2="650" y2="44" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- ── Keterangan simbol ── -->
+<rect x="38"  y="54" width="14" height="14" rx="7"  fill="#1e293b"/>
+<text x="57"  y="65" font-size="10" fill="#64748b">Terminal (Mulai/Selesai)</text>
+<rect x="178" y="54" width="14" height="14" rx="3"  fill="none" stroke="#2563eb" stroke-width="1.5"/>
+<text x="197" y="65" font-size="10" fill="#64748b">Proses</text>
+<polygon points="280,54 288,61 280,68 272,61" fill="none" stroke="#d97706" stroke-width="1.5"/>
+<text x="294" y="65" font-size="10" fill="#64748b">Keputusan</text>
+<polygon points="390,68 404,54 430,54 416,68" fill="none" stroke="#0891b2" stroke-width="1.5"/>
+<text x="435" y="65" font-size="10" fill="#64748b">Input / Output</text>
+<rect x="546" y="57" width="50" height="11" rx="0" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+<ellipse cx="571" cy="57" rx="25" ry="5" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="600" y="65" font-size="10" fill="#64748b">Database</text>
+<line x1="38" y1="76" x2="662" y2="76" stroke="#e2e8f0" stroke-width="1"/>
+
+
+<!-- ══════════════════════════════════════
+     1. MULAI  — Terminal, y=105
+     ══════════════════════════════════════ -->
+<rect x="260" y="87" width="180" height="36" rx="18" fill="#1e293b" filter="url(#sh)"/>
+<text x="350" y="110" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Mulai</text>
+
+<!-- ↓ -->
+<line x1="350" y1="123" x2="350" y2="147" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     2. INPUT — Username & Password  y=169
+        Jajaran genjang (parallelogram)
+     ══════════════════════════════════════ -->
+<polygon points="230,148 475,148 460,190 215,190" fill="#f0f9ff" stroke="#0891b2" stroke-width="2" filter="url(#sh)"/>
+<text x="345" y="165" text-anchor="middle" font-size="12" font-weight="600" fill="#0c4a6e">Input Username</text>
+<text x="345" y="182" text-anchor="middle" font-size="12" fill="#0c4a6e">&amp; Password</text>
+
+<!-- ↓ -->
+<line x1="350" y1="190" x2="350" y2="214" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     3. KEPUTUSAN — Login valid?  y=248
+        Diamond
+     ══════════════════════════════════════ -->
+<polygon points="350,214 462,248 350,282 238,248" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="350" y="244" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Login</text>
+<text x="350" y="260" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Valid?</text>
+
+<!-- Tidak → kanan → error box → loop ke atas -->
+<path d="M462,248 L575,248 L575,169 L460,169" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+<rect x="478" y="228" width="92" height="28" rx="5" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="524" y="241" text-anchor="middle" font-size="10" fill="#dc2626">Tampilkan</text>
+<text x="524" y="253" text-anchor="middle" font-size="10" fill="#dc2626">Pesan Error</text>
+<text x="490" y="244" font-size="10" fill="#ef4444">Tidak</text>
+
+<!-- Ya ↓ -->
+<text x="358" y="300" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+<line x1="350" y1="282" x2="350" y2="308" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     4. OUTPUT — Tampilkan Dashboard  y=330
+        Jajaran genjang
+     ══════════════════════════════════════ -->
+<polygon points="230,309 475,309 460,351 215,351" fill="#f0f9ff" stroke="#0891b2" stroke-width="2" filter="url(#sh)"/>
+<text x="345" y="326" text-anchor="middle" font-size="12" font-weight="600" fill="#0c4a6e">Tampilkan Dashboard</text>
+<text x="345" y="343" text-anchor="middle" font-size="12" fill="#0c4a6e">Admin</text>
+
+<!-- ↓ -->
+<line x1="350" y1="351" x2="350" y2="375" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     5. PROSES — Pilih Menu  y=397
+        Persegi
+     ══════════════════════════════════════ -->
+<rect x="220" y="376" width="260" height="42" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="350" y="393" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Pilih Menu</text>
+<text x="350" y="409" text-anchor="middle" font-size="12" fill="#1e40af">Channel / Iklan / Perangkat / Kontrol</text>
+
+<!-- ↓ -->
+<line x1="350" y1="418" x2="350" y2="442" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     6. INPUT — Input / Kelola Data  y=464
+        Jajaran genjang
+     ══════════════════════════════════════ -->
+<polygon points="230,443 475,443 460,485 215,485" fill="#f0f9ff" stroke="#0891b2" stroke-width="2" filter="url(#sh)"/>
+<text x="345" y="460" text-anchor="middle" font-size="12" font-weight="600" fill="#0c4a6e">Input / Upload / Kelola Data</text>
+<text x="345" y="477" text-anchor="middle" font-size="12" fill="#0c4a6e">Channel, Iklan, Playlist, Perangkat</text>
+
+<!-- ↓ -->
+<line x1="350" y1="485" x2="350" y2="509" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     7. KEPUTUSAN — Data valid?  y=543
+        Diamond
+     ══════════════════════════════════════ -->
+<polygon points="350,509 462,543 350,577 238,543" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="350" y="539" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Data</text>
+<text x="350" y="555" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Valid?</text>
+
+<!-- Tidak → kanan → loop ke atas input -->
+<path d="M462,543 L600,543 L600,464 L460,464" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+<rect x="503" y="523" width="92" height="28" rx="5" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="549" y="536" text-anchor="middle" font-size="10" fill="#dc2626">Tampilkan</text>
+<text x="549" y="548" text-anchor="middle" font-size="10" fill="#dc2626">Pesan Error</text>
+<text x="474" y="539" font-size="10" fill="#ef4444">Tidak</text>
+
+<!-- Ya ↓ -->
+<text x="358" y="595" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+<line x1="350" y1="577" x2="350" y2="601" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     8. DATABASE — Simpan ke Database  y=638
+        Silinder
+     ══════════════════════════════════════ -->
+<!-- body -->
+<rect x="230" y="616" width="240" height="44" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" filter="url(#sh)"/>
+<!-- tutup atas -->
+<ellipse cx="350" cy="616" rx="120" ry="11" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<!-- tutup bawah (hanya garis lengkung bawah) -->
+<path d="M230,660 Q350,682 470,660" fill="none" stroke="#7c3aed" stroke-width="2"/>
+<text x="350" y="634" text-anchor="middle" font-size="12" font-weight="600" fill="#4c1d95">Simpan ke Database</text>
+<text x="350" y="651" text-anchor="middle" font-size="12" fill="#4c1d95">tvads.db</text>
+
+<!-- ↓ -->
+<line x1="350" y1="682" x2="350" y2="706" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     9. OUTPUT — Konfirmasi Berhasil  y=728
+        Jajaran genjang
+     ══════════════════════════════════════ -->
+<polygon points="230,707 475,707 460,749 215,749" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="345" y="724" text-anchor="middle" font-size="12" font-weight="600" fill="#14532d">Tampilkan Konfirmasi</text>
+<text x="345" y="741" text-anchor="middle" font-size="12" fill="#14532d">Data berhasil disimpan</text>
+
+<!-- ↓ -->
+<line x1="350" y1="749" x2="350" y2="773" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     10. KEPUTUSAN — Lanjut?  y=807
+         Diamond
+     ══════════════════════════════════════ -->
+<polygon points="350,773 462,807 350,841 238,807" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="350" y="803" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Lanjut</text>
+<text x="350" y="819" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Menu?</text>
+
+<!-- Ya → kiri → loop ke atas menu -->
+<path d="M238,807 L80,807 L80,397 L220,397" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="6,3" fill="none" marker-end="url(#ag)"/>
+<text x="148" y="800" text-anchor="middle" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+
+<!-- Tidak ↓ -->
+<text x="358" y="859" font-size="11" fill="#475569" font-weight="600">Tidak</text>
+<line x1="350" y1="841" x2="350" y2="865" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     11. PROSES — Logout  y=886
+         Persegi
+     ══════════════════════════════════════ -->
+<rect x="245" y="866" width="210" height="40" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="350" y="891" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Logout dari Sistem</text>
+
+<!-- ↓ -->
+<line x1="350" y1="906" x2="350" y2="930" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+
+<!-- ══════════════════════════════════════
+     12. SELESAI — Terminal  y=931–967
+     ══════════════════════════════════════ -->
+<rect x="260" y="931" width="180" height="36" rx="18" fill="#1e293b" filter="url(#sh)"/>
+<text x="350" y="954" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Selesai</text>
+
+<!-- border bawah canvas -->
+<rect x="1" y="1" width="698" height="978" rx="6" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+</svg>

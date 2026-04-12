@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1100 950" width="1100" height="950" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    text { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+  <filter id="sh" x="-8%" y="-8%" width="120%" height="120%">
+    <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#00000014"/>
+  </filter>
+  <!-- Arrowheads -->
+  <marker id="ar" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#64748b"/>
+  </marker>
+  <marker id="ar-b" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#3b82f6"/>
+  </marker>
+  <marker id="ar-g" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#10b981"/>
+  </marker>
+  <marker id="ar-o" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#f59e0b"/>
+  </marker>
+  <marker id="ar-r" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#ef4444"/>
+  </marker>
+  <marker id="ar-p" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#8b5cf6"/>
+  </marker>
+</defs>
+
+<!-- ── Background ── -->
+<rect width="1100" height="950" fill="#f8fafc"/>
+<rect x="1" y="1" width="1098" height="948" rx="4" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- ── Swimlane backgrounds ── -->
+<rect x="18"  y="74" width="332" height="858" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+<rect x="362" y="74" width="370" height="858" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+<rect x="744" y="74" width="338" height="858" rx="10" fill="#fefce8" stroke="#fef08a" stroke-width="1.5"/>
+
+<!-- ── Swimlane headers ── -->
+<rect x="18"  y="74" width="332" height="44" rx="10" fill="#2563eb"/>
+<rect x="18"  y="104" width="332" height="14" fill="#2563eb"/>
+<text x="184" y="101" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">ADMIN</text>
+
+<rect x="362" y="74" width="370" height="44" rx="10" fill="#16a34a"/>
+<rect x="362" y="104" width="370" height="14" fill="#16a34a"/>
+<text x="547" y="101" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">SERVER (Flask)</text>
+
+<rect x="744" y="74" width="338" height="44" rx="10" fill="#d97706"/>
+<rect x="744" y="104" width="338" height="14" fill="#d97706"/>
+<text x="913" y="101" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">TV DISPLAY</text>
+
+<!-- ── Vertical dividers ── -->
+<line x1="354" y1="74" x2="354" y2="932" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,4"/>
+<line x1="738" y1="74" x2="738" y2="932" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+
+<!-- ==========================================================
+     HELPER MACROS (shapes defined inline)
+
+     Admin lane center  : x = 184
+     Server lane center : x = 547
+     TV lane center     : x = 913
+
+     START/END pill  : width=160, height=34, rx=17
+     Process rect    : width=240, height=40, rx=7
+     Decision diamond: hw=98, hh=32 (points offset from center)
+     ========================================================== -->
+
+
+<!-- ══════════════════════════════════════
+     ROW 0 — START (y=138)
+     ══════════════════════════════════════ -->
+
+<!-- START Admin -->
+<rect x="104" y="121" width="160" height="34" rx="17" fill="#1e293b" filter="url(#sh)"/>
+<text x="184" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">MULAI</text>
+
+<!-- START TV -->
+<rect x="833" y="121" width="160" height="34" rx="17" fill="#1e293b" filter="url(#sh)"/>
+<text x="913" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">MULAI</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 1 — Login | Server Init | Buka URL
+     y=215
+     ══════════════════════════════════════ -->
+
+<!-- Arrow down: Admin START → Login -->
+<line x1="184" y1="155" x2="184" y2="194" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Login -->
+<rect x="64" y="195" width="240" height="40" rx="7" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="210" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Masukkan Username</text>
+<text x="184" y="226" text-anchor="middle" font-size="11" fill="#1e40af">&amp; Password</text>
+
+<!-- Arrow down: TV START → Buka URL -->
+<line x1="913" y1="155" x2="913" y2="194" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- TV: Buka URL -->
+<rect x="793" y="195" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="210" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Buka URL Browser</text>
+<text x="913" y="226" text-anchor="middle" font-size="11" fill="#92400e">/display?token=&lt;token&gt;</text>
+
+<!-- Cross arrow: Admin login request → Server -->
+<path d="M304,215 L430,215" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ar-b)"/>
+<text x="367" y="209" text-anchor="middle" font-size="9" fill="#3b82f6">HTTP POST /login</text>
+
+<!-- SERVER: Validasi Kredensial -->
+<rect x="427" y="195" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="210" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Validasi Kredensial</text>
+<text x="547" y="226" text-anchor="middle" font-size="11" fill="#14532d">Werkzeug check_password_hash</text>
+
+<!-- Cross arrow: TV token check → Server -->
+<path d="M793,215 L671,215" stroke="#d97706" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ar-o)"/>
+<text x="732" y="209" text-anchor="middle" font-size="9" fill="#d97706">WS register+token</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 2 — Decisions  y=290
+     ══════════════════════════════════════ -->
+
+<!-- Arrow Admin: Login → Decision -->
+<line x1="184" y1="235" x2="184" y2="270" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- Arrow Server: Validasi → Decision response (via arrow to Admin) -->
+<line x1="547" y1="235" x2="547" y2="270" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- Arrow TV: URL → Decision -->
+<line x1="913" y1="235" x2="913" y2="270" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- DECISION: Login valid? (Admin, diamond center y=290) -->
+<polygon points="184,258 282,290 184,322 86,290" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="286" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Login</text>
+<text x="184" y="300" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Valid?</text>
+
+<!-- "Tidak" branch: left loop -->
+<path d="M86,290 L40,290 L40,215 L64,215" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar-r)"/>
+<text x="55" y="255" font-size="9" fill="#ef4444">Tidak</text>
+<!-- "Ya" label -->
+<text x="192" y="340" font-size="9" fill="#16a34a">Ya</text>
+
+<!-- SERVER: Session berhasil (response back to Admin) -->
+<polygon points="547,258 645,290 547,322 449,290" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="286" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Session</text>
+<text x="547" y="300" text-anchor="middle" font-size="10" font-weight="600" fill="#14532d">Berhasil?</text>
+<text x="449" y="286" font-size="9" fill="#ef4444">Tidak→</text>
+
+<!-- DECISION: Token valid? (TV, diamond center y=290) -->
+<polygon points="913,258 1011,290 913,322 815,290" fill="#fef9c3" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="286" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Token</text>
+<text x="913" y="300" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Valid?</text>
+
+<!-- "Tidak" branch TV: goes right to error -->
+<path d="M1011,290 L1068,290" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar-r)"/>
+<rect x="1068" y="275" width="18" height="30" rx="4" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="1077" y="287" text-anchor="middle" font-size="8" fill="#ef4444" transform="rotate(-90,1077,290)">Error</text>
+<text x="1040" y="284" font-size="9" fill="#ef4444">Tidak</text>
+<!-- "Ya" label TV -->
+<text x="920" y="340" font-size="9" fill="#16a34a">Ya</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 3 — Dashboard | Sesi DB | Terhubung
+     y=375
+     ══════════════════════════════════════ -->
+
+<!-- Arrows down -->
+<line x1="184" y1="322" x2="184" y2="354" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="547" y1="322" x2="547" y2="354" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="913" y1="322" x2="913" y2="354" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Dashboard -->
+<rect x="64" y="355" width="240" height="40" rx="7" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="370" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Buka Dashboard</text>
+<text x="184" y="386" text-anchor="middle" font-size="11" fill="#1e40af">Lihat statistik sistem</text>
+
+<!-- SERVER: Simpan sesi -->
+<rect x="427" y="355" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="370" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Simpan Sesi Login</text>
+<text x="547" y="386" text-anchor="middle" font-size="11" fill="#14532d">Session Flask (30 hari)</text>
+
+<!-- TV: Terhubung ke server -->
+<rect x="793" y="355" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="370" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Terhubung ke Server</text>
+<text x="913" y="386" text-anchor="middle" font-size="11" fill="#92400e">WebSocket /display aktif</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 4 — Kelola Konten | CRUD DB | Idle
+     y=455
+     ══════════════════════════════════════ -->
+
+<line x1="184" y1="395" x2="184" y2="434" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="547" y1="395" x2="547" y2="434" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="913" y1="395" x2="913" y2="434" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Kelola konten -->
+<rect x="64" y="435" width="240" height="40" rx="7" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="450" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Kelola Channel, Iklan</text>
+<text x="184" y="466" text-anchor="middle" font-size="11" fill="#1e40af">&amp; Playlist melalui API</text>
+
+<!-- Cross arrow: Admin → Server (API call) -->
+<path d="M304,455 L425,455" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ar-b)"/>
+<text x="365" y="449" text-anchor="middle" font-size="9" fill="#3b82f6">REST API CRUD</text>
+
+<!-- SERVER: CRUD SQLAlchemy -->
+<rect x="427" y="435" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="450" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Proses &amp; Simpan Data</text>
+<text x="547" y="466" text-anchor="middle" font-size="11" fill="#14532d">CRUD via SQLAlchemy ORM</text>
+
+<!-- TV: Layar Idle -->
+<rect x="793" y="435" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="450" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Tampilkan Layar Idle</text>
+<text x="913" y="466" text-anchor="middle" font-size="11" fill="#92400e">Jam, tanggal, token badge</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 5 — Kelola Device & Token | Update DB | Menunggu
+     y=535
+     ══════════════════════════════════════ -->
+
+<line x1="184" y1="475" x2="184" y2="514" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="547" y1="475" x2="547" y2="514" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="913" y1="475" x2="913" y2="514" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Kelola Device + Token -->
+<rect x="64" y="515" width="240" height="40" rx="7" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="530" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Tambah Perangkat TV</text>
+<text x="184" y="546" text-anchor="middle" font-size="11" fill="#1e40af">Atur token (acak / kustom)</text>
+
+<!-- Cross arrow -->
+<path d="M304,535 L425,535" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ar-b)"/>
+<text x="365" y="529" text-anchor="middle" font-size="9" fill="#3b82f6">POST /api/devices/token</text>
+
+<!-- SERVER: Update Device DB -->
+<rect x="427" y="515" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="530" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Validasi &amp; Simpan Token</text>
+<text x="547" y="546" text-anchor="middle" font-size="11" fill="#14532d">Cek unik, format, max 64 kar.</text>
+
+<!-- TV: Menunggu perintah -->
+<rect x="793" y="515" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="530" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Status: Menunggu Perintah</text>
+<text x="913" y="546" text-anchor="middle" font-size="11" fill="#92400e">Kirim status tiap 10 detik</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 6 — Kirim Perintah | Emit WebSocket | Terima
+     y=615
+     ══════════════════════════════════════ -->
+
+<line x1="184" y1="555" x2="184" y2="594" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="547" y1="555" x2="547" y2="594" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="913" y1="555" x2="913" y2="594" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Kirim Perintah -->
+<rect x="64" y="595" width="240" height="40" rx="7" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#sh)"/>
+<text x="184" y="610" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Pilih TV &amp; Kirim Perintah</text>
+<text x="184" y="626" text-anchor="middle" font-size="11" fill="#1e40af">Panel Kontrol Admin</text>
+
+<!-- Cross arrow: Admin → Server (command) -->
+<path d="M304,615 L425,615" stroke="#3b82f6" stroke-width="1.5" fill="none" marker-end="url(#ar-b)"/>
+<text x="365" y="609" text-anchor="middle" font-size="9" fill="#3b82f6">POST /api/display/command</text>
+
+<!-- SERVER: Emit WebSocket -->
+<rect x="427" y="595" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="610" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Emit WebSocket Command</text>
+<text x="547" y="626" text-anchor="middle" font-size="11" fill="#14532d">Room: "device_&lt;token&gt;"</text>
+
+<!-- Cross arrow: Server → TV (command via WebSocket) -->
+<path d="M669,615 L791,615" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#ar-g)"/>
+<text x="730" y="609" text-anchor="middle" font-size="9" fill="#10b981" font-weight="600">WebSocket emit</text>
+
+<!-- TV: Terima Perintah -->
+<rect x="793" y="595" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="610" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Terima Perintah Server</text>
+<text x="913" y="626" text-anchor="middle" font-size="11" fill="#92400e">action: play / idle / volume</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 7 — END Admin | Check DB | Decision Perintah
+     y=695
+     ══════════════════════════════════════ -->
+
+<line x1="184" y1="635" x2="184" y2="674" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="547" y1="635" x2="547" y2="674" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="913" y1="635" x2="913" y2="674" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ADMIN: Selesai / Ulangi -->
+<rect x="104" y="675" width="160" height="34" rx="17" fill="#1e293b" filter="url(#sh)"/>
+<text x="184" y="694" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">SELESAI</text>
+<!-- Admin loop back note -->
+<path d="M34,695 L34,615 L64,615" stroke="#64748b" stroke-width="1.2" stroke-dasharray="4,3" fill="none" marker-end="url(#ar)"/>
+<text x="20" y="658" font-size="9" fill="#94a3b8" transform="rotate(-90,20,655)">ulangi</text>
+
+<!-- SERVER: Cek &amp; update status -->
+<rect x="427" y="675" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="690" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Update Status Device</text>
+<text x="547" y="706" text-anchor="middle" font-size="11" fill="#14532d">connected_displays dict</text>
+
+<!-- DECISION: Jenis perintah? (TV lane, y=695) -->
+<polygon points="913,663 1011,695 913,727 815,695" fill="#fef9c3" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="691" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Jenis</text>
+<text x="913" y="705" text-anchor="middle" font-size="11" font-weight="600" fill="#78350f">Perintah?</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 8 — Cabang Konten TV
+     y=780
+     ══════════════════════════════════════ -->
+
+<line x1="547" y1="715" x2="547" y2="755" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- SERVER: Pantau status -->
+<rect x="427" y="756" width="240" height="40" rx="7" fill="#fff" stroke="#16a34a" stroke-width="2" filter="url(#sh)"/>
+<text x="547" y="771" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">Pantau Status &amp; Kirim</text>
+<text x="547" y="787" text-anchor="middle" font-size="11" fill="#14532d">Notifikasi ke Admin Panel</text>
+
+<!-- TV Branches: 3 cabang dari decision y=695 -->
+
+<!-- Branch 1: play_channel (left, y=780, x=810) -->
+<path d="M815,695 L757,695 L757,759" stroke="#3b82f6" stroke-width="1.5" fill="none" marker-end="url(#ar-b)"/>
+<text x="775" y="722" font-size="9" fill="#3b82f6">play_channel</text>
+<rect x="677" y="760" width="160" height="38" rx="7" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="757" y="775" text-anchor="middle" font-size="10" font-weight="600" fill="#1e40af">Layar IPTV</text>
+<text x="757" y="790" text-anchor="middle" font-size="10" fill="#1e40af">HLS / DASH / MP4</text>
+
+<!-- Branch 2: play_ads (center, y=780, x=913) -->
+<path d="M913,727 L913,759" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#ar-o)"/>
+<text x="940" y="747" font-size="9" fill="#f59e0b">play_ads</text>
+<rect x="833" y="760" width="160" height="38" rx="7" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5" filter="url(#sh)"/>
+<text x="913" y="775" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">Layar Iklan</text>
+<text x="913" y="790" text-anchor="middle" font-size="10" fill="#92400e">Crossfade + Loop</text>
+
+<!-- Branch 3: idle (right, y=780, x=1050) -->
+<path d="M1011,695 L1050,695 L1050,759" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+<text x="1038" y="722" font-size="9" fill="#64748b">idle</text>
+<rect x="975" y="760" width="160" height="38" rx="7" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" filter="url(#sh)"/>
+<text x="1055" y="775" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Layar Idle</text>
+<text x="1055" y="790" text-anchor="middle" font-size="10" fill="#475569">Jam + Tanggal</text>
+
+
+<!-- ══════════════════════════════════════
+     ROW 9 — Gabung kembali + END TV
+     y=855
+     ══════════════════════════════════════ -->
+
+<!-- Arrows from all 3 branches down to merge point -->
+<path d="M757,798 L757,845 L913,845" stroke="#64748b" stroke-width="1.5" fill="none"/>
+<path d="M913,798 L913,845" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+<path d="M1055,798 L1055,845 L913,845" stroke="#64748b" stroke-width="1.5" fill="none"/>
+
+<!-- TV: Tayangkan & lapor status -->
+<rect x="793" y="846" width="240" height="40" rx="7" fill="#fff" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="913" y="861" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Tayangkan Konten</text>
+<text x="913" y="877" text-anchor="middle" font-size="11" fill="#92400e">Lapor status → loop ke perintah</text>
+
+<!-- Loop arrow TV back to waiting -->
+<path d="M1033,866 L1082,866 L1082,535 L1033,535" stroke="#d97706" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ar-o)"/>
+<text x="1094" y="710" font-size="9" fill="#d97706" transform="rotate(90,1094,710)">tunggu perintah baru</text>
+
+
+<!-- ══════════════════════════════════════
+     JUDUL
+     ══════════════════════════════════════ -->
+<text x="550" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#1e293b">Flowchart Perancangan Sistem — Television Ads</text>
+<text x="550" y="56" text-anchor="middle" font-size="12" fill="#64748b">Alur kerja sistem dari sisi Admin, Server, dan TV Display</text>
+<line x1="80" y1="66" x2="1020" y2="66" stroke="#e2e8f0" stroke-width="1.5"/>
+
+
+<!-- ══════════════════════════════════════
+     LEGEND
+     ══════════════════════════════════════ -->
+<rect x="20" y="910" width="1060" height="32" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+
+<!-- Start/End symbol -->
+<rect x="38" y="919" width="36" height="14" rx="7" fill="#1e293b"/>
+<text x="80" y="930" font-size="10" fill="#475569">Mulai / Selesai</text>
+
+<!-- Process symbol -->
+<rect x="165" y="918" width="36" height="16" rx="4" fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="207" y="930" font-size="10" fill="#475569">Proses</text>
+
+<!-- Decision symbol -->
+<polygon points="287,926 307,933 287,940 267,933" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="315" y="936" font-size="10" fill="#475569">Keputusan</text>
+
+<!-- Arrows legend -->
+<line x1="404" y1="933" x2="432" y2="933" stroke="#64748b" stroke-width="2"/>
+<path d="M429,930 L435,933 L429,936 Z" fill="#64748b"/>
+<text x="440" y="936" font-size="10" fill="#475569">Aliran proses</text>
+
+<line x1="531" y1="933" x2="559" y2="933" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,2"/>
+<path d="M556,930 L562,933 L556,936 Z" fill="#3b82f6"/>
+<text x="567" y="936" font-size="10" fill="#475569">Komunikasi HTTP</text>
+
+<line x1="672" y1="933" x2="700" y2="933" stroke="#10b981" stroke-width="2"/>
+<path d="M697,930 L703,933 L697,936 Z" fill="#10b981"/>
+<text x="708" y="936" font-size="10" fill="#475569">WebSocket realtime</text>
+
+<line x1="812" y1="933" x2="840" y2="933" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4,2"/>
+<path d="M837,930 L843,933 L837,936 Z" fill="#d97706"/>
+<text x="848" y="936" font-size="10" fill="#475569">Loop / ulang</text>
+
+</svg>

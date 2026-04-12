@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1100 640" width="1100" height="640" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    text { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+
+  <!-- Drop shadows -->
+  <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+    <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#00000018"/>
+  </filter>
+
+  <!-- Arrowheads -->
+  <marker id="arr-dark" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#4a5568"/>
+  </marker>
+  <marker id="arr-blue" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#3b82f6"/>
+  </marker>
+  <marker id="arr-green" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#10b981"/>
+  </marker>
+  <marker id="arr-orange" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#f59e0b"/>
+  </marker>
+  <marker id="arr-purple" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#8b5cf6"/>
+  </marker>
+  <marker id="arr-red" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#ef4444"/>
+  </marker>
+</defs>
+
+<!-- Background -->
+<rect width="1100" height="640" fill="#f8fafc"/>
+
+<!-- Subtle border -->
+<rect x="1" y="1" width="1098" height="638" rx="4" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- ========== JUDUL ========== -->
+<text x="550" y="42" text-anchor="middle" font-size="20" font-weight="700" fill="#1e293b">Arsitektur Sistem — Television Ads</text>
+<text x="550" y="63" text-anchor="middle" font-size="12" fill="#94a3b8">Sistem Manajemen Iklan dan IPTV Berbasis Web</text>
+
+<!-- Divider bawah judul -->
+<line x1="80" y1="78" x2="1020" y2="78" stroke="#e2e8f0" stroke-width="1.5"/>
+
+
+<!-- ========================================================
+     KOTAK 1 — ADMIN PANEL  (kiri)
+     x=40, y=110, w=190, h=280
+     ======================================================== -->
+<rect x="40" y="110" width="195" height="285" rx="14" fill="#fff" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+<!-- Header -->
+<rect x="40" y="110" width="195" height="46" rx="14" fill="#3b82f6"/>
+<rect x="40" y="138" width="195" height="18" fill="#3b82f6"/>
+<!-- Icon + Judul -->
+<text x="137" y="139" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Admin Panel</text>
+
+<!-- Isi -->
+<text x="64" y="172" font-size="11" fill="#475569">&#128100;  Login &amp; Autentikasi</text>
+<text x="64" y="192" font-size="11" fill="#475569">&#128250;  Manajemen Channel IPTV</text>
+<text x="64" y="212" font-size="11" fill="#475569">&#128444;  Upload &amp; kelola iklan</text>
+<text x="64" y="232" font-size="11" fill="#475569">&#128203;  Susun playlist iklan</text>
+<text x="64" y="252" font-size="11" fill="#475569">&#128241;  Kelola perangkat TV</text>
+<text x="64" y="272" font-size="11" fill="#475569">&#127918;  Kontrol live per TV</text>
+<text x="64" y="292" font-size="11" fill="#475569">&#128273;  Edit token kustom</text>
+
+<line x1="58" y1="306" x2="217" y2="306" stroke="#e2e8f0" stroke-width="1"/>
+
+<text x="64" y="324" font-size="10" fill="#94a3b8">Browser (HTML5 + CSS3 + JS)</text>
+<text x="64" y="341" font-size="10" fill="#94a3b8">Responsive (desktop/mobile)</text>
+<text x="64" y="358" font-size="10" fill="#94a3b8">Realtime via Socket.IO</text>
+<text x="64" y="375" font-size="10" fill="#94a3b8">Session login 30 hari</text>
+
+
+<!-- ========================================================
+     KOTAK 2 — FLASK SERVER  (tengah)
+     x=330, y=90, w=220, h=320
+     ======================================================== -->
+<rect x="330" y="90" width="230" height="330" rx="14" fill="#fff" stroke="#1e293b" stroke-width="2.5" filter="url(#shadow)"/>
+<!-- Header -->
+<rect x="330" y="90" width="230" height="46" rx="14" fill="#1e293b"/>
+<rect x="330" y="118" width="230" height="18" fill="#1e293b"/>
+<text x="445" y="119" text-anchor="middle" font-size="13" font-weight="700" fill="#f1f5f9">Flask Web Server</text>
+
+<!-- Badges kecil di header -->
+<rect x="338" y="98" width="42" height="16" rx="4" fill="#3b82f6" opacity="0.8"/>
+<text x="359" y="110" text-anchor="middle" font-size="9" fill="#fff" font-weight="600">PORT</text>
+<text x="390" y="110" font-size="9" fill="#93c5fd">8000</text>
+
+<!-- Isi -->
+<text x="354" y="155" font-size="11" font-weight="600" fill="#334155">REST API</text>
+<text x="354" y="172" font-size="10" fill="#64748b">/api/channels    /api/ads</text>
+<text x="354" y="188" font-size="10" fill="#64748b">/api/playlists   /api/devices</text>
+<text x="354" y="204" font-size="10" fill="#64748b">/api/display/command</text>
+<text x="354" y="220" font-size="10" fill="#64748b">/api/devices/{id}/token ✎</text>
+
+<line x1="348" y1="232" x2="542" y2="232" stroke="#f1f5f9" stroke-width="1.5"/>
+
+<text x="354" y="250" font-size="11" font-weight="600" fill="#334155">WebSocket (Socket.IO)</text>
+<text x="354" y="267" font-size="10" fill="#64748b">Namespace /display — TV client</text>
+<text x="354" y="283" font-size="10" fill="#64748b">Namespace /admin — panel admin</text>
+<text x="354" y="299" font-size="10" fill="#64748b">Room per device: "device_&lt;token&gt;"</text>
+
+<line x1="348" y1="311" x2="542" y2="311" stroke="#f1f5f9" stroke-width="1.5"/>
+
+<text x="354" y="329" font-size="11" font-weight="600" fill="#334155">Stream Proxy</text>
+<text x="354" y="346" font-size="10" fill="#64748b">/api/proxy/stream  (CORS bypass)</text>
+<text x="354" y="362" font-size="10" fill="#64748b">Rewrite M3U8 — streaming chunked</text>
+<text x="354" y="378" font-size="10" fill="#64748b">DASH diakses langsung</text>
+<text x="354" y="397" font-size="10" fill="#64748b">Python: Flask • SQLAlchemy • SocketIO</text>
+
+
+<!-- ========================================================
+     KOTAK 3 — TV DISPLAY  (kanan)
+     x=660, y=110, w=190, h=280
+     ======================================================== -->
+<rect x="660" y="110" width="195" height="285" rx="14" fill="#fff" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+<!-- Header -->
+<rect x="660" y="110" width="195" height="46" rx="14" fill="#10b981"/>
+<rect x="660" y="138" width="195" height="18" fill="#10b981"/>
+<text x="757" y="139" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">TV Display</text>
+
+<!-- Isi -->
+<text x="682" y="172" font-size="11" fill="#475569">&#128274;  Akses via token URL</text>
+<text x="682" y="192" font-size="11" fill="#475569">&#128336;  Layar Idle (jam &amp; tanggal)</text>
+<text x="682" y="212" font-size="11" fill="#475569">&#128250;  Layar IPTV (HLS / DASH)</text>
+<text x="682" y="232" font-size="11" fill="#475569">&#127917;  Layar Iklan (crossfade)</text>
+<text x="682" y="252" font-size="11" fill="#475569">&#128264;  Volume via perintah server</text>
+<text x="682" y="272" font-size="11" fill="#475569">&#128247;  Fullscreen (double-click)</text>
+<text x="682" y="292" font-size="11" fill="#475569">&#128308; / &#128994;  Indikator koneksi</text>
+
+<line x1="678" y1="306" x2="837" y2="306" stroke="#e2e8f0" stroke-width="1"/>
+
+<text x="682" y="324" font-size="10" fill="#94a3b8">HTML5 + CSS3 + Vanilla JS</text>
+<text x="682" y="341" font-size="10" fill="#94a3b8">HLS.js + dash.js</text>
+<text x="682" y="358" font-size="10" fill="#94a3b8">Reconnect otomatis</text>
+<text x="682" y="375" font-size="10" fill="#94a3b8">Token bisa dikustomisasi</text>
+
+
+<!-- ========================================================
+     KOTAK 4 — DATABASE  (bawah-kiri dari server)
+     x=290, y=490, w=160, h=90
+     ======================================================== -->
+<rect x="290" y="490" width="165" height="90" rx="12" fill="#fff" stroke="#8b5cf6" stroke-width="2" filter="url(#shadow)"/>
+<rect x="290" y="490" width="165" height="36" rx="12" fill="#8b5cf6"/>
+<rect x="290" y="512" width="165" height="14" fill="#8b5cf6"/>
+<text x="372" y="512" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">SQLite Database</text>
+<text x="308" y="540" font-size="10" fill="#64748b">tvads.db  (lokal)</text>
+<text x="308" y="556" font-size="10" fill="#64748b">8 tabel  •  SQLAlchemy ORM</text>
+<text x="308" y="572" font-size="10" fill="#64748b">Device, Channel, Ad, Playlist...</text>
+
+
+<!-- ========================================================
+     KOTAK 5 — FILE STORAGE  (bawah-kanan dari server)
+     x=480, y=490, w=165, h=90
+     ======================================================== -->
+<rect x="480" y="490" width="165" height="90" rx="12" fill="#fff" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+<rect x="480" y="490" width="165" height="36" rx="12" fill="#f59e0b"/>
+<rect x="480" y="512" width="165" height="14" fill="#f59e0b"/>
+<text x="562" y="512" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">File Storage</text>
+<text x="498" y="540" font-size="10" fill="#64748b">/static/uploads/ads/</text>
+<text x="498" y="556" font-size="10" fill="#64748b">/static/uploads/channels/</text>
+<text x="498" y="572" font-size="10" fill="#64748b">Gambar &amp; video  •  Max 500 MB</text>
+
+
+<!-- ========================================================
+     KOTAK 6 — IPTV EKSTERNAL  (bawah dari TV Display)
+     x=660, y=490, w=195, h=90
+     ======================================================== -->
+<rect x="660" y="490" width="195" height="90" rx="12" fill="#fff" stroke="#ef4444" stroke-width="2" filter="url(#shadow)"/>
+<rect x="660" y="490" width="195" height="36" rx="12" fill="#ef4444"/>
+<rect x="660" y="512" width="195" height="14" fill="#ef4444"/>
+<text x="757" y="512" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Sumber IPTV Eksternal</text>
+<text x="678" y="540" font-size="10" fill="#64748b">HLS / M3U8  (via proxy server)</text>
+<text x="678" y="556" font-size="10" fill="#64748b">MPEG-DASH  (akses langsung)</text>
+<text x="678" y="572" font-size="10" fill="#64748b">Import playlist M3U</text>
+
+
+<!-- ========================================================
+     PANAH / KONEKSI
+     ======================================================== -->
+
+<!-- 1. Admin → Server: HTTP REST (kanan atas) -->
+<path d="M237,225 L328,225" stroke="#3b82f6" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+<text x="282" y="218" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="600">HTTP REST</text>
+
+<!-- 2. Server → Admin: response (kanan bawah) -->
+<path d="M328,245 L237,245" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-blue)"/>
+<text x="282" y="260" text-anchor="middle" font-size="10" fill="#3b82f6">respons JSON</text>
+
+<!-- 3. Admin ↔ Server: WebSocket (kanan, lebih bawah) -->
+<path d="M237,330 L328,330" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#arr-orange)"/>
+<path d="M328,350 L237,350" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#arr-orange)"/>
+<text x="282" y="323" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="600">WebSocket</text>
+<text x="282" y="366" text-anchor="middle" font-size="10" fill="#f59e0b">/admin</text>
+
+<!-- 4. Server → TV Display: perintah WebSocket (kanan atas) -->
+<path d="M562,235 L658,235" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arr-green)"/>
+<text x="610" y="228" text-anchor="middle" font-size="10" fill="#10b981" font-weight="600">Perintah</text>
+
+<!-- 5. TV Display → Server: register + status -->
+<path d="M658,258 L562,258" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-green)"/>
+<text x="610" y="274" text-anchor="middle" font-size="10" fill="#10b981">register + status</text>
+
+<!-- 6. Server → Database -->
+<path d="M413,422 L413,488" stroke="#8b5cf6" stroke-width="2" fill="none" marker-end="url(#arr-purple)"/>
+<text x="393" y="460" font-size="10" fill="#8b5cf6" font-weight="600" text-anchor="end">baca/tulis</text>
+<text x="393" y="474" font-size="10" fill="#8b5cf6" text-anchor="end">data</text>
+
+<!-- 7. Server → File Storage -->
+<path d="M520,422 L555,488" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#arr-orange)"/>
+<text x="565" y="452" font-size="10" fill="#f59e0b" font-weight="600">simpan/</text>
+<text x="565" y="466" font-size="10" fill="#f59e0b">sajikan file</text>
+
+<!-- 8. TV Display → IPTV Eksternal -->
+<path d="M757,397 L757,488" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+<text x="800" y="448" font-size="10" fill="#ef4444" font-weight="600">stream</text>
+<text x="800" y="462" font-size="10" fill="#ef4444">video</text>
+
+<!-- 9. TV Display → File Storage (iklan) -->
+<path d="M660,380 C580,430 580,460 647,488" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-orange)"/>
+<text x="590" y="435" text-anchor="middle" font-size="10" fill="#f59e0b">muat iklan</text>
+
+
+<!-- ========================================================
+     NOMOR ALUR (label lingkaran)
+     ======================================================== -->
+
+<!-- Step 1: Admin login & kelola konten -->
+<circle cx="90" cy="108" r="11" fill="#3b82f6"/>
+<text x="90" y="113" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">1</text>
+
+<!-- Step 2: Server proses & simpan -->
+<circle cx="383" cy="88" r="11" fill="#1e293b"/>
+<text x="383" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">2</text>
+
+<!-- Step 3: Perintah ke TV -->
+<circle cx="713" cy="108" r="11" fill="#10b981"/>
+<text x="713" y="113" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">3</text>
+
+<!-- Step 4: TV putar konten -->
+<circle cx="713" cy="488" r="11" fill="#ef4444"/>
+<text x="713" y="493" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">4</text>
+
+
+<!-- ========================================================
+     LEGENDA
+     ======================================================== -->
+<rect x="40" y="610" width="700" height="24" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+
+<text x="58" y="626" font-size="10" font-weight="600" fill="#64748b">Legenda:</text>
+
+<line x1="110" y1="622" x2="134" y2="622" stroke="#3b82f6" stroke-width="2"/>
+<path d="M131,619 L137,622 L131,625 Z" fill="#3b82f6"/>
+<text x="141" y="626" font-size="10" fill="#3b82f6">HTTP / REST</text>
+
+<line x1="210" y1="622" x2="234" y2="622" stroke="#f59e0b" stroke-width="2"/>
+<path d="M231,619 L237,622 L231,625 Z" fill="#f59e0b"/>
+<text x="241" y="626" font-size="10" fill="#f59e0b">WebSocket</text>
+
+<line x1="310" y1="622" x2="334" y2="622" stroke="#10b981" stroke-width="2"/>
+<path d="M331,619 L337,622 L331,625 Z" fill="#10b981"/>
+<text x="341" y="626" font-size="10" fill="#10b981">Perintah Realtime</text>
+
+<line x1="440" y1="622" x2="464" y2="622" stroke="#8b5cf6" stroke-width="2"/>
+<path d="M461,619 L467,622 L461,625 Z" fill="#8b5cf6"/>
+<text x="471" y="626" font-size="10" fill="#8b5cf6">Database</text>
+
+<line x1="540" y1="622" x2="564" y2="622" stroke="#ef4444" stroke-width="2"/>
+<path d="M561,619 L567,622 L561,625 Z" fill="#ef4444"/>
+<text x="571" y="626" font-size="10" fill="#ef4444">Stream Video</text>
+
+<line x1="635" y1="622" x2="659" y2="622" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2"/>
+<path d="M656,619 L662,622 L656,625 Z" fill="#f59e0b"/>
+<text x="666" y="626" font-size="10" fill="#f59e0b">Muat File</text>
+
+</svg>

@@ -43,6 +43,20 @@
     // ---- Token ----
     var token = new URLSearchParams(window.location.search).get('token');
 
+    // ---- Token Badge ----
+    var tokenBadge = document.getElementById('idle-token-badge');
+    var tokenValueEl = document.getElementById('idle-token-value');
+
+    if (token) {
+        // Tampilkan sebagian token: 8 karakter awal ... 8 karakter akhir
+        tokenValueEl.textContent = token.length > 16
+            ? token.slice(0, 8) + '...' + token.slice(-8)
+            : token;
+    } else {
+        tokenValueEl.textContent = 'Tidak ada token';
+        tokenBadge.classList.add('no-token');
+    }
+
     // ---- Socket.IO ----
     var socket = io('/display', {
         reconnection: true,

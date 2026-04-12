@@ -627,8 +627,25 @@ def api_delete_device(did):
 @login_required
 def api_regenerate_token(did):
     device = Device.query.get_or_404(did)
+    data = request.json or {}
+    custom_token = data.get('token', '').strip()
+
+    if custom_token:
+        if len(custom_token) < 4:
+            return jsonify({'error': 'Token minimal 4 karakter'}), 400
+        if len(custom_token) > 64:
+            return jsonify({'error': 'Token maksimal 64 karakter'}), 400
+        if not re.match(r'^[a-zA-Z0-9_\-]+$', custom_token):
+            return jsonify({'error': 'Token hanya boleh mengandung huruf, angka, - dan _'}), 400
+        conflict = Device.query.filter(Device.token == custom_token, Device.id != did).first()
+        if conflict:
+            return jsonify({'error': 'Token sudah digunakan perangkat lain'}), 409
+        new_token = custom_token
+    else:
+        new_token = secrets.token_hex(16)
+
     connected_displays.pop(device.token, None)
-    device.token = secrets.token_hex(16)
+    device.token = new_token
     db.session.commit()
     return jsonify(device_to_dict(device))
 

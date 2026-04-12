@@ -287,3 +287,54 @@ body:hover { cursor: default; }
     background: #2dd4a0;
     box-shadow: 0 0 6px #2dd4a0;
 }
+
+/* ===================================================================
+   Idle Token Badge
+   =================================================================== */
+
+.idle-token-badge {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    z-index: 5;
+    backdrop-filter: blur(6px);
+    opacity: 0.45;
+    transition: opacity 0.3s;
+}
+
+.idle-token-badge:hover {
+    opacity: 1;
+}
+
+.idle-token-badge i {
+    font-size: 11px;
+    color: rgba(76, 123, 245, 0.8);
+}
+
+.idle-token-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+}
+
+.idle-token-value {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.5px;
+}
+
+.idle-token-badge.no-token .idle-token-value {
+    color: rgba(245, 101, 101, 0.7);
+}
