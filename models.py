@@ -10,6 +10,8 @@ class AdminUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    # 'admin' = akses penuh; 'user' = hanya dashboard & upload iklan
+    role = db.Column(db.String(20), nullable=False, default='admin')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):

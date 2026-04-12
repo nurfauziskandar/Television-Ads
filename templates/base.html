@@ -26,6 +26,7 @@
                 <i class="fa-solid fa-gauge-high"></i>
                 <span>Dashboard</span>
             </a>
+            {% if session.admin_role == 'admin' %}
             <a href="/admin/devices" class="nav-item {% if page == 'devices' %}active{% endif %}">
                 <i class="fa-solid fa-display"></i>
                 <span>Perangkat TV</span>
@@ -34,10 +35,12 @@
                 <i class="fa-solid fa-satellite-dish"></i>
                 <span>Channel IPTV</span>
             </a>
+            {% endif %}
             <a href="/admin/ads" class="nav-item {% if page == 'ads' %}active{% endif %}">
                 <i class="fa-solid fa-rectangle-ad"></i>
                 <span>Iklan</span>
             </a>
+            {% if session.admin_role == 'admin' %}
             <a href="/admin/playlists" class="nav-item {% if page == 'playlists' %}active{% endif %}">
                 <i class="fa-solid fa-layer-group"></i>
                 <span>Playlist</span>
@@ -46,6 +49,11 @@
                 <i class="fa-solid fa-sliders"></i>
                 <span>Kontrol TV</span>
             </a>
+            <a href="/admin/users" class="nav-item {% if page == 'users' %}active{% endif %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Pengguna</span>
+            </a>
+            {% endif %}
         </nav>
         <div class="sidebar-footer">
             <a href="/display" target="_blank" class="nav-item">
@@ -73,6 +81,9 @@
                 <div class="topbar-user">
                     <i class="fa-solid fa-circle-user"></i>
                     <span>{{ session.admin_username }}</span>
+                    <span class="role-badge role-{{ session.admin_role }}">
+                        {{ 'Admin' if session.admin_role == 'admin' else 'User' }}
+                    </span>
                     <form action="/logout" method="post" style="display:inline">
                         <button type="submit" class="btn-icon" title="Logout">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i>

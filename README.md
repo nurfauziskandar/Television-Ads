@@ -149,44 +149,138 @@ graph LR
 
 ## Instalasi
 
-### 1. Clone Repository
+### Windows
+
+> Persyaratan: Python 3.10+ sudah terinstall dan tersedia di PATH. Unduh dari [python.org](https://www.python.org/downloads/) — saat instalasi centang **"Add Python to PATH"**.
+
+**1. Clone repository**
+
+```cmd
+git clone <repository-url>
+cd Television-Ads
+```
+
+Jika tidak memiliki Git, unduh ZIP dari halaman repository lalu ekstrak dan masuk ke foldernya.
+
+**2. Install dependencies**
+
+```cmd
+pip install -r requirements.txt
+```
+
+**3. Jalankan server**
+
+```cmd
+python app.py
+```
+
+**4. Akses aplikasi**
+
+Buka `http://localhost:8000/` di browser. Pada fresh install, Anda akan diarahkan ke halaman **Setup Awal** untuk membuat akun admin.
+
+> **Catatan:** Jika `pip` tidak dikenali, coba `python -m pip install -r requirements.txt`. Jika port 8000 sudah terpakai, lihat bagian [Troubleshooting](#troubleshooting).
+
+---
+
+### Linux
+
+> Persyaratan: Python 3.10+ dan pip tersedia. Sebagian besar distro modern sudah menyertakannya.
+
+**1. Pastikan Python dan pip tersedia**
+
+```bash
+python3 --version
+pip3 --version
+```
+
+Jika pip belum ada, install dengan:
+
+```bash
+# Ubuntu/Debian
+sudo apt update && sudo apt install python3-pip
+
+# Fedora/RHEL
+sudo dnf install python3-pip
+
+# Arch Linux
+sudo pacman -S python-pip
+```
+
+**2. Clone repository**
 
 ```bash
 git clone <repository-url>
 cd Television-Ads
 ```
 
-### 2. Buat Virtual Environment
+**3. Install dependencies**
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate    # Linux/Mac
-# venv\Scripts\activate     # Windows
+pip3 install -r requirements.txt
 ```
 
-### 3. Install Dependencies
+**4. Jalankan server**
 
 ```bash
-pip install -r requirements.txt
+python3 app.py
 ```
 
-### 4. Jalankan Server
+**5. Akses aplikasi**
+
+Buka `http://localhost:8000/` di browser. Pada fresh install, Anda akan diarahkan ke halaman **Setup Awal** untuk membuat akun admin.
+
+> **Catatan:** Jika mendapat error `externally-managed-environment` pada Ubuntu 23.04+, tambahkan flag `--break-system-packages`: `pip3 install --break-system-packages -r requirements.txt` — atau gunakan virtualenv.
+
+---
+
+### macOS
+
+> Persyaratan: Python 3.10+. macOS tidak menyertakan Python 3 secara default — install via [python.org](https://www.python.org/downloads/) atau Homebrew.
+
+**1. Install Python (jika belum ada)**
 
 ```bash
-python app.py
+# Via Homebrew (direkomendasikan)
+brew install python
+
+# Verifikasi
+python3 --version
 ```
 
-Server akan berjalan di `http://0.0.0.0:8000`.
+**2. Clone repository**
 
-### 5. Setup Akun Admin
+```bash
+git clone <repository-url>
+cd Television-Ads
+```
 
-Buka `http://localhost:8000/` di browser. Pada fresh install, Anda akan diarahkan ke halaman **Setup Awal** untuk membuat akun admin (username minimal 3 karakter, password minimal 8 karakter). Setelah akun dibuat, halaman setup tidak bisa diakses lagi.
+**3. Install dependencies**
 
-### 6. Tambahkan Perangkat TV
+```bash
+pip3 install -r requirements.txt
+```
+
+**4. Jalankan server**
+
+```bash
+python3 app.py
+```
+
+**5. Akses aplikasi**
+
+Buka `http://localhost:8000/` di browser. Pada fresh install, Anda akan diarahkan ke halaman **Setup Awal** untuk membuat akun admin.
+
+> **Catatan:** Jika mendapat peringatan `externally-managed-environment`, tambahkan flag `--break-system-packages`: `pip3 install --break-system-packages -r requirements.txt` — atau gunakan virtualenv.
+
+---
+
+### Langkah Selanjutnya (Semua Platform)
+
+**Tambahkan Perangkat TV**
 
 Di panel admin, buka menu **Perangkat TV** → **Tambah Perangkat**. Isi nama dan lokasi. Token unik akan digenerate otomatis. Salin token tersebut untuk URL display.
 
-### 7. Akses Display
+**Akses Display**
 
 Buka URL berikut di browser perangkat yang terhubung ke TV via HDMI:
 
@@ -195,6 +289,8 @@ http://<IP-Komputer-A>:8000/display?token=<token-perangkat>
 ```
 
 Tekan F11 untuk masuk fullscreen.
+
+---
 
 ### Setup Display di Raspberry Pi (Opsional)
 

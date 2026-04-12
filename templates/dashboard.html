@@ -53,6 +53,7 @@
 </div>
 
 <div class="grid-2">
+    {% if session.admin_role == 'admin' %}
     <div class="card">
         <div class="card-header">
             <h3><i class="fa-solid fa-bolt"></i> Aksi Cepat</h3>
@@ -78,6 +79,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="card">
         <div class="card-header">

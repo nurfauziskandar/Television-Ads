@@ -37,12 +37,17 @@
                 {% if ad.file_type == 'image' %}
                 <span><i class="fa-regular fa-clock"></i> {{ ad.duration }}s</span>
                 {% endif %}
+                {% if session.admin_role == 'admin' %}
                 <label class="toggle toggle-sm">
                     <input type="checkbox" {% if ad.is_active %}checked{% endif %}
                            onchange="toggleAd({{ ad.id }}, this.checked)">
                     <span class="toggle-slider"></span>
                 </label>
+                {% else %}
+                <span class="status-dot {% if ad.is_active %}online{% endif %}" title="{% if ad.is_active %}Aktif{% else %}Nonaktif{% endif %}"></span>
+                {% endif %}
             </div>
+            {% if session.admin_role == 'admin' %}
             <div class="ad-actions">
                 <button class="btn-icon" title="Edit"
                         onclick="editAd({{ ad.id }}, '{{ ad.name }}', {{ ad.duration }})">
@@ -53,6 +58,7 @@
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

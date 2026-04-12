@@ -173,6 +173,37 @@ def login_required(f):
     return decorated
 
 
+def admin_required(f):
+    """Hanya role 'admin' yang diizinkan. Harus digunakan setelah login_required."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if AdminUser.query.count() == 0:
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Setup belum selesai'}), 403
+            return redirect(url_for('setup'))
+        if not session.get('admin_logged_in'):
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Unauthorized'}), 401
+            return redirect(url_for('login', next=request.path))
+        # Session lama (sebelum fitur role) tidak punya admin_role;
+        # perlakukan sebagai admin agar tidak mengunci pengguna yang sudah login.
+        role = session.get('admin_role')
+        if role is None:
+            # Sinkronkan role dari database
+            user = AdminUser.query.filter_by(
+                username=session.get('admin_username')
+            ).first()
+            if user:
+                session['admin_role'] = user.role
+                role = user.role
+        if role != 'admin':
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Forbidden'}), 403
+            return redirect(url_for('admin_dashboard'))
+        return f(*args, **kwargs)
+    return decorated
+
+
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
     if AdminUser.query.count() > 0:
@@ -191,13 +222,14 @@ def setup():
         elif password != confirm:
             error = 'Konfirmasi password tidak cocok'
         else:
-            user = AdminUser(username=username)
+            user = AdminUser(username=username, role='admin')
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
             session.permanent = True
             session['admin_logged_in'] = True
             session['admin_username'] = username
+            session['admin_role'] = 'admin'
             return redirect(url_for('admin_dashboard'))
     return render_template('setup.html', error=error)
 
@@ -217,6 +249,7 @@ def login():
             session.permanent = True
             session['admin_logged_in'] = True
             session['admin_username'] = username
+            session['admin_role'] = user.role
             next_url = request.form.get('next') or url_for('admin_dashboard')
             return redirect(next_url)
         error = 'Username atau password salah'
@@ -283,7 +316,7 @@ def admin_dashboard():
 
 
 @app.route('/admin/devices')
-@login_required
+@admin_required
 def admin_devices():
     devices = Device.query.order_by(Device.created_at).all()
     channels = Channel.query.filter_by(is_active=True).order_by(Channel.group, Channel.name).all()
@@ -293,7 +326,7 @@ def admin_devices():
 
 
 @app.route('/admin/channels')
-@login_required
+@admin_required
 def admin_channels():
     channels = Channel.query.order_by(Channel.order, Channel.id).all()
     groups = sorted({ch.group for ch in channels if ch.group})
@@ -308,7 +341,7 @@ def admin_ads():
 
 
 @app.route('/admin/playlists')
-@login_required
+@admin_required
 def admin_playlists():
     playlists = Playlist.query.order_by(Playlist.created_at.desc()).all()
     ads = Ad.query.filter_by(is_active=True).order_by(Ad.name).all()
@@ -316,10 +349,106 @@ def admin_playlists():
 
 
 @app.route('/admin/control')
-@login_required
+@admin_required
 def admin_control():
     devices = Device.query.filter_by(is_active=True).order_by(Device.name).all()
     return render_template('control.html', page='control', devices=devices)
+
+
+# ---------------------------------------------------------------------------
+# Admin — User Management
+# ---------------------------------------------------------------------------
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    users = AdminUser.query.order_by(AdminUser.created_at).all()
+    return render_template('users.html', page='users', users=users)
+
+
+@app.route('/api/users', methods=['GET'])
+@admin_required
+def api_get_users():
+    users = AdminUser.query.order_by(AdminUser.created_at).all()
+    return jsonify([
+        {'id': u.id, 'username': u.username, 'role': u.role,
+         'created_at': u.created_at.isoformat()}
+        for u in users
+    ])
+
+
+@app.route('/api/users', methods=['POST'])
+@admin_required
+def api_create_user():
+    data = request.json or {}
+    username = (data.get('username') or '').strip()
+    password = data.get('password', '')
+    role = data.get('role', 'user')
+
+    if not username or len(username) < 3:
+        return jsonify({'error': 'Username minimal 3 karakter'}), 400
+    if len(password) < 8:
+        return jsonify({'error': 'Password minimal 8 karakter'}), 400
+    if role not in ('admin', 'user'):
+        return jsonify({'error': 'Role tidak valid'}), 400
+    if AdminUser.query.filter_by(username=username).first():
+        return jsonify({'error': 'Username sudah digunakan'}), 409
+
+    user = AdminUser(username=username, role=role)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'id': user.id, 'username': user.username, 'role': user.role}), 201
+
+
+@app.route('/api/users/<int:uid>', methods=['PUT'])
+@admin_required
+def api_update_user(uid):
+    user = AdminUser.query.get_or_404(uid)
+    data = request.json or {}
+
+    # Cegah admin menghapus role admin dari dirinya sendiri
+    if str(uid) == str(session.get('admin_id')) and data.get('role') == 'user':
+        return jsonify({'error': 'Tidak dapat mengubah role akun sendiri'}), 400
+
+    new_username = (data.get('username') or '').strip()
+    if new_username and new_username != user.username:
+        if len(new_username) < 3:
+            return jsonify({'error': 'Username minimal 3 karakter'}), 400
+        if AdminUser.query.filter(
+            AdminUser.username == new_username, AdminUser.id != uid
+        ).first():
+            return jsonify({'error': 'Username sudah digunakan'}), 409
+        user.username = new_username
+
+    new_password = data.get('password', '')
+    if new_password:
+        if len(new_password) < 8:
+            return jsonify({'error': 'Password minimal 8 karakter'}), 400
+        user.set_password(new_password)
+
+    if 'role' in data:
+        if data['role'] not in ('admin', 'user'):
+            return jsonify({'error': 'Role tidak valid'}), 400
+        user.role = data['role']
+
+    db.session.commit()
+    return jsonify({'id': user.id, 'username': user.username, 'role': user.role})
+
+
+@app.route('/api/users/<int:uid>', methods=['DELETE'])
+@admin_required
+def api_delete_user(uid):
+    user = AdminUser.query.get_or_404(uid)
+    # Cegah admin menghapus dirinya sendiri
+    if user.username == session.get('admin_username'):
+        return jsonify({'error': 'Tidak dapat menghapus akun yang sedang login'}), 400
+    # Pastikan selalu ada minimal satu admin
+    if user.role == 'admin' and AdminUser.query.filter_by(role='admin').count() <= 1:
+        return jsonify({'error': 'Harus ada minimal satu akun admin'}), 400
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'status': 'deleted'})
 
 
 # ---------------------------------------------------------------------------
@@ -336,14 +465,14 @@ def display():
 # ---------------------------------------------------------------------------
 
 @app.route('/api/channels', methods=['GET'])
-@login_required
+@admin_required
 def api_get_channels():
     channels = Channel.query.order_by(Channel.order, Channel.id).all()
     return jsonify([channel_to_dict(c) for c in channels])
 
 
 @app.route('/api/channels', methods=['POST'])
-@login_required
+@admin_required
 def api_create_channel():
     data = request.json
     ch = Channel(
@@ -358,7 +487,7 @@ def api_create_channel():
 
 
 @app.route('/api/channels/<int:cid>', methods=['PUT'])
-@login_required
+@admin_required
 def api_update_channel(cid):
     ch = Channel.query.get_or_404(cid)
     data = request.json
@@ -374,7 +503,7 @@ def api_update_channel(cid):
 
 
 @app.route('/api/channels/<int:cid>', methods=['DELETE'])
-@login_required
+@admin_required
 def api_delete_channel(cid):
     ch = Channel.query.get_or_404(cid)
     if ch.source_type == 'local' and ch.filename:
@@ -387,7 +516,7 @@ def api_delete_channel(cid):
 
 
 @app.route('/api/channels/upload', methods=['POST'])
-@login_required
+@admin_required
 def api_upload_channel():
     if 'file' not in request.files:
         return jsonify({'error': 'File tidak ditemukan'}), 400
@@ -411,7 +540,7 @@ def api_upload_channel():
 
 
 @app.route('/api/channels/import', methods=['POST'])
-@login_required
+@admin_required
 def api_import_channels():
     data = request.json
     m3u_url = data.get('url', '')
@@ -473,7 +602,7 @@ def api_create_ad():
 
 
 @app.route('/api/ads/<int:aid>', methods=['PUT'])
-@login_required
+@admin_required
 def api_update_ad(aid):
     ad = Ad.query.get_or_404(aid)
     data = request.json
@@ -486,7 +615,7 @@ def api_update_ad(aid):
 
 
 @app.route('/api/ads/<int:aid>', methods=['DELETE'])
-@login_required
+@admin_required
 def api_delete_ad(aid):
     ad = Ad.query.get_or_404(aid)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], ad.filename)
@@ -502,13 +631,13 @@ def api_delete_ad(aid):
 # ---------------------------------------------------------------------------
 
 @app.route('/api/playlists', methods=['GET'])
-@login_required
+@admin_required
 def api_get_playlists():
     return jsonify([playlist_to_dict(p) for p in Playlist.query.order_by(Playlist.created_at.desc()).all()])
 
 
 @app.route('/api/playlists', methods=['POST'])
-@login_required
+@admin_required
 def api_create_playlist():
     pl = Playlist(name=request.json['name'])
     db.session.add(pl)
@@ -517,7 +646,7 @@ def api_create_playlist():
 
 
 @app.route('/api/playlists/<int:pid>', methods=['PUT'])
-@login_required
+@admin_required
 def api_update_playlist(pid):
     pl = Playlist.query.get_or_404(pid)
     data = request.json
@@ -529,7 +658,7 @@ def api_update_playlist(pid):
 
 
 @app.route('/api/playlists/<int:pid>', methods=['DELETE'])
-@login_required
+@admin_required
 def api_delete_playlist(pid):
     db.session.delete(Playlist.query.get_or_404(pid))
     db.session.commit()
@@ -537,7 +666,7 @@ def api_delete_playlist(pid):
 
 
 @app.route('/api/playlists/<int:pid>/items', methods=['POST'])
-@login_required
+@admin_required
 def api_add_playlist_item(pid):
     pl = Playlist.query.get_or_404(pid)
     max_order = db.session.query(db.func.max(PlaylistItem.order)).filter_by(playlist_id=pid).scalar() or 0
@@ -548,7 +677,7 @@ def api_add_playlist_item(pid):
 
 
 @app.route('/api/playlists/<int:pid>/items/<int:iid>', methods=['DELETE'])
-@login_required
+@admin_required
 def api_remove_playlist_item(pid, iid):
     db.session.delete(PlaylistItem.query.filter_by(id=iid, playlist_id=pid).first_or_404())
     db.session.commit()
@@ -556,7 +685,7 @@ def api_remove_playlist_item(pid, iid):
 
 
 @app.route('/api/playlists/<int:pid>/items/reorder', methods=['PUT'])
-@login_required
+@admin_required
 def api_reorder_playlist_items(pid):
     for idx, item_id in enumerate(request.json.get('items', [])):
         item = PlaylistItem.query.filter_by(id=item_id, playlist_id=pid).first()
@@ -571,19 +700,19 @@ def api_reorder_playlist_items(pid):
 # ---------------------------------------------------------------------------
 
 @app.route('/api/devices', methods=['GET'])
-@login_required
+@admin_required
 def api_get_devices():
     return jsonify([device_to_dict(d) for d in Device.query.order_by(Device.name).all()])
 
 
 @app.route('/api/devices/<int:did>', methods=['GET'])
-@login_required
+@admin_required
 def api_get_device(did):
     return jsonify(device_to_dict(Device.query.get_or_404(did), include_assignments=True))
 
 
 @app.route('/api/devices', methods=['POST'])
-@login_required
+@admin_required
 def api_create_device():
     data = request.json
     device = Device(
@@ -597,7 +726,7 @@ def api_create_device():
 
 
 @app.route('/api/devices/<int:did>', methods=['PUT'])
-@login_required
+@admin_required
 def api_update_device(did):
     device = Device.query.get_or_404(did)
     data = request.json
@@ -610,7 +739,7 @@ def api_update_device(did):
 
 
 @app.route('/api/devices/<int:did>', methods=['DELETE'])
-@login_required
+@admin_required
 def api_delete_device(did):
     device = Device.query.get_or_404(did)
     if device.token in connected_displays:
@@ -624,7 +753,7 @@ def api_delete_device(did):
 
 
 @app.route('/api/devices/<int:did>/token', methods=['POST'])
-@login_required
+@admin_required
 def api_regenerate_token(did):
     device = Device.query.get_or_404(did)
     data = request.json or {}
@@ -651,7 +780,7 @@ def api_regenerate_token(did):
 
 
 @app.route('/api/devices/<int:did>/channels', methods=['PUT'])
-@login_required
+@admin_required
 def api_batch_assign_channels(did):
     device = Device.query.get_or_404(did)
     channel_ids = set(request.json.get('channel_ids', []))
@@ -664,7 +793,7 @@ def api_batch_assign_channels(did):
 
 
 @app.route('/api/devices/<int:did>/playlists', methods=['PUT'])
-@login_required
+@admin_required
 def api_batch_assign_playlists(did):
     device = Device.query.get_or_404(did)
     playlist_ids = set(request.json.get('playlist_ids', []))
@@ -681,7 +810,7 @@ def api_batch_assign_playlists(did):
 # ---------------------------------------------------------------------------
 
 @app.route('/api/display/command', methods=['POST'])
-@login_required
+@admin_required
 def api_display_command():
     data = request.json
     device_id = data.get('device_id')
@@ -725,7 +854,7 @@ def api_display_command():
 
 
 @app.route('/api/display/status')
-@login_required
+@admin_required
 def api_display_status():
     return jsonify(get_displays_summary())
 
@@ -887,6 +1016,17 @@ def on_socket_error(e):
 
 with app.app_context():
     db.create_all()
+    # Migrasi manual: tambah kolom 'role' ke tabel admin_user jika belum ada.
+    # db.create_all() tidak mengubah tabel yang sudah ada, sehingga perlu ALTER TABLE.
+    # Gunakan begin() agar DDL otomatis di-commit saat blok selesai.
+    with db.engine.begin() as conn:
+        cols = [row[1] for row in conn.execute(
+            db.text("PRAGMA table_info(admin_user)")
+        )]
+        if 'role' not in cols:
+            conn.execute(db.text(
+                "ALTER TABLE admin_user ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'admin'"
+            ))
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=8000, debug=True,

@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Pengguna - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-users"></i> Pengguna
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-primary" onclick="openModal('add-user-modal')">
+    <i class="fa-solid fa-user-plus"></i> Tambah Pengguna
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% if users %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Dibuat</th>
+                    <th style="width:140px">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr id="user-row-{{ user.id }}">
+                    <td>
+                        <i class="fa-solid fa-circle-user" style="color:var(--text-muted);margin-right:6px"></i>
+                        {{ user.username }}
+                        {% if user.username == session.admin_username %}
+                        <span style="font-size:11px;color:var(--text-muted)">(kamu)</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="role-badge role-{{ user.role }}">
+                            {{ 'Admin' if user.role == 'admin' else 'User' }}
+                        </span>
+                    </td>
+                    <td style="color:var(--text-muted);font-size:13px">
+                        {{ user.created_at.strftime('%d %b %Y, %H:%M') }}
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px">
+                            <button class="btn-icon" title="Edit"
+                                    onclick="openEditModal({{ user.id }}, '{{ user.username }}', '{{ user.role }}')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            {% if user.username != session.admin_username %}
+                            <button class="btn-icon danger" title="Hapus"
+                                    onclick="openDeleteModal({{ user.id }}, '{{ user.username }}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-users"></i>
+            <h3>Belum ada pengguna lain</h3>
+            <p>Tambahkan pengguna baru untuk memberikan akses terbatas.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="add-user-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Tambah Pengguna</h3>
+            <button class="btn-icon" onclick="closeModal('add-user-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="add-username"
+                       placeholder="Minimal 3 karakter" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="add-password"
+                       placeholder="Minimal 8 karakter" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-control" id="add-role">
+                    <option value="user">User — hanya dashboard & upload iklan</option>
+                    <option value="admin">Admin — akses penuh</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('add-user-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="createUser()" id="add-user-btn">
+                <i class="fa-solid fa-user-plus"></i> Tambah
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="edit-user-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Edit Pengguna</h3>
+            <button class="btn-icon" onclick="closeModal('edit-user-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-user-id">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="edit-username" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password Baru <span style="color:var(--text-muted);font-weight:400">(kosongkan jika tidak diubah)</span></label>
+                <input type="password" class="form-control" id="edit-password"
+                       placeholder="Minimal 8 karakter" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-control" id="edit-role">
+                    <option value="user">User — hanya dashboard & upload iklan</option>
+                    <option value="admin">Admin — akses penuh</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('edit-user-modal')">Batal</button>
+            <button class="btn btn-primary" onclick="saveUser()" id="edit-user-btn">
+                <i class="fa-solid fa-check"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal-overlay" id="delete-user-modal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Hapus Pengguna</h3>
+            <button class="btn-icon" onclick="closeModal('delete-user-modal')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Yakin ingin menghapus pengguna <strong id="delete-user-name"></strong>?
+            Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('delete-user-modal')">Batal</button>
+            <button class="btn btn-danger" onclick="confirmDeleteUser()" id="delete-user-btn">
+                <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deleteUserId = null;
+
+function openEditModal(id, username, role) {
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('edit-username').value = username;
+    document.getElementById('edit-password').value = '';
+    document.getElementById('edit-role').value = role;
+    openModal('edit-user-modal');
+}
+
+function openDeleteModal(id, username) {
+    deleteUserId = id;
+    document.getElementById('delete-user-name').textContent = username;
+    openModal('delete-user-modal');
+}
+
+async function createUser() {
+    const btn = document.getElementById('add-user-btn');
+    const username = document.getElementById('add-username').value.trim();
+    const password = document.getElementById('add-password').value;
+    const role = document.getElementById('add-role').value;
+
+    if (!username || !password) {
+        showToast('Username dan password wajib diisi', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    try {
+        const resp = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, role }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Gagal menambah pengguna');
+        showToast('Pengguna berhasil ditambahkan', 'success');
+        closeModal('add-user-modal');
+        setTimeout(() => location.reload(), 500);
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function saveUser() {
+    const btn = document.getElementById('edit-user-btn');
+    const id = document.getElementById('edit-user-id').value;
+    const username = document.getElementById('edit-username').value.trim();
+    const password = document.getElementById('edit-password').value;
+    const role = document.getElementById('edit-role').value;
+
+    if (!username) {
+        showToast('Username tidak boleh kosong', 'error');
+        return;
+    }
+
+    const payload = { username, role };
+    if (password) payload.password = password;
+
+    btn.disabled = true;
+    try {
+        const resp = await fetch('/api/users/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Gagal menyimpan');
+        showToast('Pengguna berhasil diperbarui', 'success');
+        closeModal('edit-user-modal');
+        setTimeout(() => location.reload(), 500);
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function confirmDeleteUser() {
+    if (!deleteUserId) return;
+    const btn = document.getElementById('delete-user-btn');
+    btn.disabled = true;
+    try {
+        const resp = await fetch('/api/users/' + deleteUserId, { method: 'DELETE' });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Gagal menghapus');
+        showToast('Pengguna berhasil dihapus', 'success');
+        closeModal('delete-user-modal');
+        const row = document.getElementById('user-row-' + deleteUserId);
+        if (row) row.remove();
+        deleteUserId = null;
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+</script>
+{% endblock %}
