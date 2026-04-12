@@ -12,7 +12,7 @@ from flask import session
 from models import db, AdminUser, Channel, Ad, Playlist, PlaylistItem, Device, DeviceChannel, DevicePlaylist
 from config import Config
 
-# Patch socketserver.BaseServer.handle_error to silently ignore ENOTCONN (errno 57).
+# Patch on socketserver.BaseServer.handle_error to silently ignore ENOTCONN (errno 57).
 # On macOS, port 5000 is shared with AirPlay Receiver via SO_REUSEPORT. When both
 # are active, some accepted connections have their data consumed by AirPlay before
 # Flask can read them, resulting in ENOTCONN. Using port 8000 avoids the conflict;
