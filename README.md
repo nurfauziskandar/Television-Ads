@@ -10,6 +10,7 @@ Sistem kontrol televisi berbasis web yang memungkinkan sebuah komputer (Komputer
 - [Topologi Jaringan](#topologi-jaringan)
 - [Kebutuhan Sistem](#kebutuhan-sistem)
 - [Fitur](#fitur)
+- [Role & Pengguna](#role--pengguna)
 - [Instalasi](#instalasi)
 - [Penggunaan](#penggunaan)
 - [Alur Kerja Sistem](#alur-kerja-sistem)
@@ -128,12 +129,13 @@ graph LR
 ### Panel Admin
 
 - **Autentikasi** — Setup akun admin pada fresh install, login/logout, sesi 30 hari. Tidak ada registrasi ulang setelah admin dibuat.
-- **Dashboard** — Ringkasan statistik (perangkat, channel, iklan, playlist) dan status display secara real-time
-- **Manajemen Perangkat TV** — Tambah perangkat, generate token unik, assign channel dan playlist per perangkat
-- **Manajemen Channel IPTV** — Tambah manual, upload file video lokal, atau import dari file/URL M3U
-- **Manajemen Iklan** — Upload gambar (PNG, JPG, GIF, WEBP) dan video (MP4, WEBM, MOV) hingga 500MB
-- **Playlist Iklan** — Buat playlist dengan urutan iklan yang dapat diatur
-- **Kontrol TV** — Kirim perintah per perangkat (mode Idle/IPTV/Iklan, ganti channel, ganti playlist, atur volume)
+- **Manajemen Pengguna** — Admin dapat membuat akun pengguna dengan dua role: `admin` (akses penuh) dan `user` (hanya dashboard & upload iklan). Admin bisa mengubah username, password, role, dan menghapus akun pengguna.
+- **Dashboard** — Ringkasan statistik (perangkat, channel, iklan, playlist) dan status display secara real-time. Role `user` tidak melihat bagian Aksi Cepat.
+- **Manajemen Perangkat TV** — Tambah perangkat, generate token unik, assign channel dan playlist per perangkat *(khusus admin)*
+- **Manajemen Channel IPTV** — Tambah manual, upload file video lokal, atau import dari file/URL M3U *(khusus admin)*
+- **Manajemen Iklan** — Upload gambar (PNG, JPG, GIF, WEBP) dan video (MP4, WEBM, MOV) hingga 500MB. Role `user` hanya dapat meng-upload; edit, hapus, dan toggle aktif hanya untuk admin.
+- **Playlist Iklan** — Buat playlist dengan urutan iklan yang dapat diatur *(khusus admin)*
+- **Kontrol TV** — Kirim perintah per perangkat (mode Idle/IPTV/Iklan, ganti channel, ganti playlist, atur volume) *(khusus admin)*
 - **Responsive & Scrollable** — Dapat diakses dari desktop maupun mobile; konten panjang dapat di-scroll
 
 ### Display Client
@@ -144,6 +146,37 @@ graph LR
 - **Mode Iklan** — Rotasi otomatis gambar dan video dengan transisi crossfade
 - **Auto-reconnect** — Koneksi ulang otomatis jika terputus
 - **Fullscreen** — Double-click untuk toggle fullscreen
+
+---
+
+## Role & Pengguna
+
+Sistem mendukung dua role akun:
+
+| Role | Akses |
+|------|-------|
+| **admin** | Akses penuh ke semua fitur: perangkat, channel, iklan, playlist, kontrol TV, dan manajemen pengguna |
+| **user** | Hanya dashboard (tanpa Aksi Cepat) dan halaman Iklan (upload saja — tidak bisa edit, hapus, atau mengubah status aktif) |
+
+### Akun Pertama (Setup Awal)
+
+Akun pertama yang dibuat saat fresh install selalu mendapat role **admin**.
+
+### Menambah Pengguna
+
+Setelah login sebagai admin, buka menu **Pengguna** di sidebar → **Tambah Pengguna**. Isi username (minimal 3 karakter), password (minimal 8 karakter), dan pilih role. Admin yang menentukan kredensial lalu memberikannya ke pengguna yang bersangkutan.
+
+### Catatan Database
+
+File database (`tvads.db`) tidak ikut disimpan di repository. Setiap mesin yang menjalankan aplikasi memiliki database sendiri dan perlu melakukan **Setup Awal** secara terpisah.
+
+### Keamanan
+
+Semua pembatasan role diterapkan di sisi server (bukan hanya tampilan UI):
+
+- Endpoint yang hanya boleh diakses admin akan mengembalikan `403 Forbidden` jika dipanggil oleh role `user`, meskipun melalui API langsung
+- Admin tidak dapat menghapus atau menurunkan role akunnya sendiri
+- Sistem selalu memastikan ada minimal satu akun dengan role `admin`
 
 ---
 
