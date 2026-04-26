@@ -199,16 +199,35 @@
                     </label>
                 </div>
 
-                <div class="settings-toggle-row">
+                <div class="settings-toggle-row" style="flex-direction:column;align-items:flex-start;gap:10px">
                     <div>
-                        <div class="settings-toggle-label">Tampilkan Ikon</div>
-                        <div class="settings-toggle-desc">Ikon broadcast di atas jam</div>
+                        <div class="settings-toggle-label">Logo Idle</div>
+                        <div class="settings-toggle-desc">Tampil di atas jam. PNG, JPEG, atau WEBP — maks 2 MB. Jika kosong, ikon broadcast digunakan.</div>
                     </div>
-                    <label class="toggle">
-                        <input type="checkbox" id="idle_show_icon"
-                               {% if config.idle_show_icon == 'true' %}checked{% endif %}>
-                        <span class="toggle-slider"></span>
-                    </label>
+                    {% if config.idle_logo %}
+                    <div class="logo-preview-wrap" id="logo-preview-wrap">
+                        <img src="/static/uploads/logo/{{ config.idle_logo }}"
+                             class="logo-preview-img" id="logo-preview-img"
+                             alt="Logo saat ini">
+                        <button class="btn btn-danger btn-sm" onclick="deleteLogo()">
+                            <i class="fa-solid fa-trash"></i> Hapus Logo
+                        </button>
+                    </div>
+                    {% else %}
+                    <div id="logo-preview-wrap" style="display:none">
+                        <img class="logo-preview-img" id="logo-preview-img" alt="Logo saat ini">
+                        <button class="btn btn-danger btn-sm" onclick="deleteLogo()">
+                            <i class="fa-solid fa-trash"></i> Hapus Logo
+                        </button>
+                    </div>
+                    {% endif %}
+                    <div id="logo-upload-wrap">
+                        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                            <i class="fa-solid fa-upload"></i> Upload Logo
+                            <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/webp"
+                                   style="display:none" onchange="uploadLogo(this)">
+                        </label>
+                    </div>
                 </div>
 
             </div>
@@ -277,7 +296,6 @@ async function saveSettings() {
     payload.idle_bg_to      = document.getElementById('idle_bg_to').value;
     payload.idle_show_clock = document.getElementById('idle_show_clock').checked ? 'true' : 'false';
     payload.idle_show_date  = document.getElementById('idle_show_date').checked ? 'true' : 'false';
-    payload.idle_show_icon  = document.getElementById('idle_show_icon').checked ? 'true' : 'false';
 
     try {
         const resp = await fetch('/api/config', {
@@ -287,6 +305,42 @@ async function saveSettings() {
         });
         if (!resp.ok) throw new Error('Gagal menyimpan');
         showToast('Pengaturan tersimpan. Muat ulang halaman untuk melihat perubahan warna.', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+    }
+}
+
+async function uploadLogo(input) {
+    if (!input.files.length) return;
+    const file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+        showToast('Ukuran file melebihi 2 MB', 'error');
+        input.value = '';
+        return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+        const resp = await fetch('/api/config/logo', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Upload gagal');
+        document.getElementById('logo-preview-img').src = data.url;
+        document.getElementById('logo-preview-wrap').style.display = '';
+        showToast('Logo berhasil diupload', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        input.value = '';
+    }
+}
+
+async function deleteLogo() {
+    try {
+        const resp = await fetch('/api/config/logo', { method: 'DELETE' });
+        if (!resp.ok) throw new Error('Gagal menghapus');
+        document.getElementById('logo-preview-wrap').style.display = 'none';
+        document.getElementById('logo-preview-img').src = '';
+        showToast('Logo dihapus', 'success');
     } catch (e) {
         showToast(e.message, 'error');
     }

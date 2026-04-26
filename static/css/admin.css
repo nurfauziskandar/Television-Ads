@@ -1832,6 +1832,22 @@ textarea.form-control { resize: vertical; min-height: 80px; }
     font-size: 12px;
 }
 
+.logo-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-preview-img {
+    height: 64px;
+    max-width: 180px;
+    object-fit: contain;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    padding: 6px;
+}
+
 @media (max-width: 900px) {
     .settings-grid { grid-template-columns: 1fr; }
     .color-grid { grid-template-columns: 1fr; }

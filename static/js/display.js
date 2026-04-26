@@ -445,7 +445,9 @@
         var screenIdleEl = document.getElementById('screen-idle');
         var clockEl  = document.getElementById('idle-clock');
         var dateEl   = document.getElementById('idle-date');
-        var iconEl   = document.querySelector('.idle-icon');
+        var iconEl   = document.getElementById('idle-icon');
+        var logoEl   = document.getElementById('idle-logo');
+        var logoImg  = document.getElementById('idle-logo-img');
         var labelEl  = document.querySelector('.idle-label');
 
         // Background gradasi
@@ -454,10 +456,19 @@
         screenIdleEl.style.background =
             'radial-gradient(ellipse at center, ' + from + ' 0%, ' + to + ' 70%)';
 
-        // Visibility
-        if (clockEl)  clockEl.style.display  = cfg.idle_show_clock === 'false' ? 'none' : '';
-        if (dateEl)   dateEl.style.display   = cfg.idle_show_date  === 'false' ? 'none' : '';
-        if (iconEl)   iconEl.style.display   = cfg.idle_show_icon  === 'false' ? 'none' : '';
+        // Logo vs icon: tampilkan logo jika ada, fallback ke icon broadcast
+        if (cfg.idle_logo) {
+            logoImg.src = '/static/uploads/logo/' + cfg.idle_logo;
+            logoEl.style.display = '';
+            iconEl.style.display = 'none';
+        } else {
+            logoEl.style.display = 'none';
+            iconEl.style.display = '';
+        }
+
+        // Visibility jam & tanggal
+        if (clockEl) clockEl.style.display = cfg.idle_show_clock === 'false' ? 'none' : '';
+        if (dateEl)  dateEl.style.display  = cfg.idle_show_date  === 'false' ? 'none' : '';
 
         // Label
         if (labelEl && cfg.idle_label) labelEl.textContent = cfg.idle_label;

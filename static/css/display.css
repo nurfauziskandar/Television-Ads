@@ -58,6 +58,17 @@ body:hover { cursor: default; }
     margin-bottom: 20px;
 }
 
+.idle-logo {
+    margin-bottom: 20px;
+}
+
+.idle-logo img {
+    max-height: 100px;
+    max-width: 320px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+}
+
 .idle-clock {
     font-size: 80px;
     font-weight: 200;

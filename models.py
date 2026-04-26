@@ -131,7 +131,7 @@ CONFIG_DEFAULTS = {
     # Idle display
     'idle_show_clock': 'true',
     'idle_show_date':  'true',
-    'idle_show_icon':  'true',
+    'idle_logo':       '',
     'idle_label':      'TV Control System',
     'idle_bg_from':    '#0a1628',
     'idle_bg_to':      '#050a14',

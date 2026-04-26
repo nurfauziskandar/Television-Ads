@@ -58,8 +58,11 @@ connected_displays = {}
 # socket sid -> token (reverse lookup)
 sid_to_token = {}
 
+LOGO_FOLDER = os.path.join('static', 'uploads', 'logo')
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['CHANNEL_FOLDER'], exist_ok=True)
+os.makedirs(LOGO_FOLDER, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
@@ -455,6 +458,27 @@ def api_delete_user(uid):
 # Admin — Settings
 # ---------------------------------------------------------------------------
 
+# (magic_bytes, offset, mime) — validasi tipe file dari konten, bukan extension
+_ALLOWED_LOGO_MAGIC = [
+    (b'\x89PNG\r\n\x1a\n', 0, 'png'),
+    (b'\xff\xd8\xff',       0, 'jpg'),
+    (b'RIFF',               0, 'webp'),   # WEBP: RIFF....WEBP
+]
+_LOGO_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
+
+
+def _detect_logo_ext(stream):
+    """Baca 12 byte pertama dan kembalikan ekstensi jika tipe diizinkan, else None."""
+    header = stream.read(12)
+    stream.seek(0)
+    for magic, offset, ext in _ALLOWED_LOGO_MAGIC:
+        if header[offset:offset + len(magic)] == magic:
+            if ext == 'webp' and header[8:12] != b'WEBP':
+                continue
+            return ext
+    return None
+
+
 def _hex_to_rgba(hex_color, alpha):
     """Konversi hex color (#rrggbb) ke string rgba() dengan alpha tertentu."""
     h = hex_color.lstrip('#')
@@ -523,12 +547,62 @@ def api_config_css():
                     headers={'Cache-Control': 'no-cache'})
 
 
+@app.route('/api/config/logo', methods=['POST'])
+@admin_required
+def api_upload_logo():
+    if 'file' not in request.files:
+        return jsonify({'error': 'File tidak ditemukan'}), 400
+    f = request.files['file']
+    if not f or f.filename == '':
+        return jsonify({'error': 'File kosong'}), 400
+
+    # Validasi ukuran
+    f.stream.seek(0, 2)
+    size = f.stream.tell()
+    f.stream.seek(0)
+    if size > _LOGO_MAX_BYTES:
+        return jsonify({'error': 'Ukuran file melebihi 2 MB'}), 400
+
+    # Validasi magic bytes — tolak jika bukan PNG/JPEG/WEBP
+    ext = _detect_logo_ext(f.stream)
+    if not ext:
+        return jsonify({'error': 'Tipe file tidak diizinkan. Gunakan PNG, JPEG, atau WEBP'}), 400
+
+    # Hapus logo lama jika ada
+    old_logo = AppConfig.get('idle_logo', '')
+    if old_logo:
+        old_path = os.path.join(LOGO_FOLDER, old_logo)
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'idle_logo_{ts}.{ext}'
+    f.save(os.path.join(LOGO_FOLDER, filename))
+
+    AppConfig.set('idle_logo', filename)
+    db.session.commit()
+    return jsonify({'filename': filename, 'url': f'/static/uploads/logo/{filename}'}), 201
+
+
+@app.route('/api/config/logo', methods=['DELETE'])
+@admin_required
+def api_delete_logo():
+    filename = AppConfig.get('idle_logo', '')
+    if filename:
+        path = os.path.join(LOGO_FOLDER, filename)
+        if os.path.exists(path):
+            os.remove(path)
+        AppConfig.set('idle_logo', '')
+        db.session.commit()
+    return jsonify({'status': 'deleted'})
+
+
 @app.route('/api/config/display')
 def api_config_display():
     """Konfigurasi idle display — tidak memerlukan auth (diakses display client)."""
     return jsonify({
         k: AppConfig.get(k, CONFIG_DEFAULTS[k])
-        for k in ('idle_show_clock', 'idle_show_date', 'idle_show_icon',
+        for k in ('idle_show_clock', 'idle_show_date', 'idle_logo',
                   'idle_label', 'idle_bg_from', 'idle_bg_to')
     })
 
