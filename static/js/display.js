@@ -440,6 +440,34 @@
 
     setInterval(reportStatus, 10000);
 
+    // ---- Idle Config ----
+    function applyIdleConfig(cfg) {
+        var screenIdleEl = document.getElementById('screen-idle');
+        var clockEl  = document.getElementById('idle-clock');
+        var dateEl   = document.getElementById('idle-date');
+        var iconEl   = document.querySelector('.idle-icon');
+        var labelEl  = document.querySelector('.idle-label');
+
+        // Background gradasi
+        var from = cfg.idle_bg_from || '#0a1628';
+        var to   = cfg.idle_bg_to   || '#050a14';
+        screenIdleEl.style.background =
+            'radial-gradient(ellipse at center, ' + from + ' 0%, ' + to + ' 70%)';
+
+        // Visibility
+        if (clockEl)  clockEl.style.display  = cfg.idle_show_clock === 'false' ? 'none' : '';
+        if (dateEl)   dateEl.style.display   = cfg.idle_show_date  === 'false' ? 'none' : '';
+        if (iconEl)   iconEl.style.display   = cfg.idle_show_icon  === 'false' ? 'none' : '';
+
+        // Label
+        if (labelEl && cfg.idle_label) labelEl.textContent = cfg.idle_label;
+    }
+
+    fetch('/api/config/display')
+        .then(function(r) { return r.json(); })
+        .then(applyIdleConfig)
+        .catch(function() {});
+
     // ---- Init ----
     goIdle();
 

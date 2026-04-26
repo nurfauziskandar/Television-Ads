@@ -11,6 +11,7 @@ Sistem kontrol televisi berbasis web yang memungkinkan sebuah komputer (Komputer
 - [Kebutuhan Sistem](#kebutuhan-sistem)
 - [Fitur](#fitur)
 - [Role & Pengguna](#role--pengguna)
+- [Login & Akun](#login--akun)
 - [Instalasi](#instalasi)
 - [Penggunaan](#penggunaan)
 - [Alur Kerja Sistem](#alur-kerja-sistem)
@@ -136,6 +137,7 @@ graph LR
 - **Manajemen Iklan** — Upload gambar (PNG, JPG, GIF, WEBP) dan video (MP4, WEBM, MOV) hingga 500MB. Role `user` hanya dapat meng-upload; edit, hapus, dan toggle aktif hanya untuk admin.
 - **Playlist Iklan** — Buat playlist dengan urutan iklan yang dapat diatur *(khusus admin)*
 - **Kontrol TV** — Kirim perintah per perangkat (mode Idle/IPTV/Iklan, ganti channel, ganti playlist, atur volume) *(khusus admin)*
+- **Pengaturan** — Kustomisasi warna admin panel (accent, background, card, teks, sukses, peringatan, bahaya) dan konfigurasi tampilan idle display (teks label, gradasi background, visibilitas jam/tanggal/ikon) *(khusus admin)*
 - **Responsive & Scrollable** — Dapat diakses dari desktop maupun mobile; konten panjang dapat di-scroll
 
 ### Display Client
@@ -177,6 +179,37 @@ Semua pembatasan role diterapkan di sisi server (bukan hanya tampilan UI):
 - Endpoint yang hanya boleh diakses admin akan mengembalikan `403 Forbidden` jika dipanggil oleh role `user`, meskipun melalui API langsung
 - Admin tidak dapat menghapus atau menurunkan role akunnya sendiri
 - Sistem selalu memastikan ada minimal satu akun dengan role `admin`
+
+---
+
+## Login & Akun
+
+Tidak ada akun bawaan. Setiap mesin menjalankan database sendiri dan perlu setup awal.
+
+### Fresh Install
+
+Saat pertama kali dijalankan, buka `http://localhost:8000/` — aplikasi otomatis mengarahkan ke halaman **Setup Awal**:
+
+| Field | Ketentuan |
+|-------|-----------|
+| Username | Minimal 3 karakter |
+| Password | Minimal 8 karakter |
+| Role | Otomatis `admin` (tidak dapat diubah di sini) |
+
+Setelah setup selesai, halaman ini tidak bisa diakses lagi selama sudah ada akun admin.
+
+### Menambah Akun User
+
+Login sebagai admin → menu **Pengguna** → **Tambah Pengguna**. Admin menentukan username, password, dan role (`admin` atau `user`). Kredensial diberikan secara manual kepada pengguna yang bersangkutan.
+
+### Akses Login
+
+URL login: `http://<IP-server>:8000/login`
+
+| Role | Halaman yang dapat diakses |
+|------|---------------------------|
+| `admin` | Dashboard, Perangkat TV, Channel IPTV, Iklan (full), Playlist, Kontrol TV, Pengguna, Pengaturan |
+| `user` | Dashboard (tanpa Aksi Cepat), Iklan (upload saja) |
 
 ---
 
@@ -486,7 +519,7 @@ flowchart TD
 Television-Ads/
 ├── app.py                  # Aplikasi Flask utama (routes, API, Socket.IO, auth)
 ├── config.py               # Konfigurasi aplikasi (secret key, upload, DB)
-├── models.py               # Model database (AdminUser, Channel, Ad, Playlist, Device, ...)
+├── models.py               # Model database (AdminUser, Channel, Ad, Playlist, Device, AppConfig, ...)
 ├── requirements.txt        # Dependensi Python
 ├── list_iptv.txt           # Daftar channel IPTV Indonesia (format M3U)
 ├── .secret_key             # Secret key sesi (digenerate otomatis, jangan di-commit)
@@ -514,6 +547,8 @@ Television-Ads/
     ├── ads.html            # Halaman manajemen iklan
     ├── playlists.html      # Halaman manajemen playlist
     ├── control.html        # Halaman kontrol TV per perangkat
+    ├── users.html          # Halaman manajemen pengguna (admin only)
+    ├── settings.html       # Halaman pengaturan warna & idle display (admin only)
     └── display.html        # Halaman display client (untuk TV)
 ```
 
@@ -591,6 +626,35 @@ Television-Ads/
 { "device_id": 1, "action": "idle" }
 { "device_id": 1, "action": "set_volume", "volume": 80 }
 ```
+
+### Konfigurasi Aplikasi
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/config` | Ambil semua konfigurasi (admin only) |
+| POST | `/api/config` | Update satu atau lebih key konfigurasi (admin only) |
+| GET | `/api/config/css` | CSS variabel warna untuk admin panel (tanpa auth) |
+| GET | `/api/config/display` | Konfigurasi idle display untuk display client (tanpa auth) |
+
+**Key konfigurasi yang tersedia:**
+
+| Key | Default | Keterangan |
+|-----|---------|------------|
+| `color_accent` | `#4c7bf5` | Warna aksen utama |
+| `color_accent_hover` | `#6390ff` | Warna aksen saat hover |
+| `color_success` | `#2dd4a0` | Warna sukses |
+| `color_warning` | `#f5a623` | Warna peringatan |
+| `color_danger` | `#f56565` | Warna bahaya/hapus |
+| `color_bg_primary` | `#0b0e14` | Background utama |
+| `color_bg_secondary` | `#111520` | Background sidebar |
+| `color_bg_card` | `#161b28` | Background card |
+| `color_text_primary` | `#e6e9f0` | Warna teks utama |
+| `idle_show_clock` | `true` | Tampilkan jam di idle |
+| `idle_show_date` | `true` | Tampilkan tanggal di idle |
+| `idle_show_icon` | `true` | Tampilkan ikon di idle |
+| `idle_label` | `TV Control System` | Teks label di idle |
+| `idle_bg_from` | `#0a1628` | Warna gradasi atas idle background |
+| `idle_bg_to` | `#050a14` | Warna gradasi bawah idle background |
 
 ### Stream Proxy
 

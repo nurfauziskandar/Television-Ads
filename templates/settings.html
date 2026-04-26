@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Pengaturan - TV Control{% endblock %}
+
+{% block header %}
+<i class="fa-solid fa-gear"></i> Pengaturan
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-primary" onclick="saveSettings()">
+    <i class="fa-solid fa-floppy-disk"></i> Simpan
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="settings-grid">
+
+    <!-- Warna Admin Panel -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-palette"></i> Warna Admin Panel</h3>
+        </div>
+        <div class="card-body">
+            <div class="color-grid">
+
+                <div class="color-item">
+                    <label class="form-label">Accent (Utama)</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_accent" value="{{ config.color_accent }}"
+                               oninput="previewColor('accent', this.value)">
+                        <input type="text" class="form-control color-hex" id="color_accent_hex"
+                               value="{{ config.color_accent }}"
+                               oninput="syncHex('color_accent', this.value)">
+                    </div>
+                    <div class="color-preview" id="preview-accent"
+                         style="background:{{ config.color_accent }}"></div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Accent Hover</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_accent_hover" value="{{ config.color_accent_hover }}"
+                               oninput="previewColor('accent-hover', this.value)">
+                        <input type="text" class="form-control color-hex" id="color_accent_hover_hex"
+                               value="{{ config.color_accent_hover }}"
+                               oninput="syncHex('color_accent_hover', this.value)">
+                    </div>
+                    <div class="color-preview" id="preview-accent-hover"
+                         style="background:{{ config.color_accent_hover }}"></div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Sukses</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_success" value="{{ config.color_success }}"
+                               oninput="previewColor('success', this.value)">
+                        <input type="text" class="form-control color-hex" id="color_success_hex"
+                               value="{{ config.color_success }}"
+                               oninput="syncHex('color_success', this.value)">
+                    </div>
+                    <div class="color-preview" id="preview-success"
+                         style="background:{{ config.color_success }}"></div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Peringatan</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_warning" value="{{ config.color_warning }}"
+                               oninput="previewColor('warning', this.value)">
+                        <input type="text" class="form-control color-hex" id="color_warning_hex"
+                               value="{{ config.color_warning }}"
+                               oninput="syncHex('color_warning', this.value)">
+                    </div>
+                    <div class="color-preview" id="preview-warning"
+                         style="background:{{ config.color_warning }}"></div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Bahaya</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_danger" value="{{ config.color_danger }}"
+                               oninput="previewColor('danger', this.value)">
+                        <input type="text" class="form-control color-hex" id="color_danger_hex"
+                               value="{{ config.color_danger }}"
+                               oninput="syncHex('color_danger', this.value)">
+                    </div>
+                    <div class="color-preview" id="preview-danger"
+                         style="background:{{ config.color_danger }}"></div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Background Utama</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_bg_primary" value="{{ config.color_bg_primary }}">
+                        <input type="text" class="form-control color-hex" id="color_bg_primary_hex"
+                               value="{{ config.color_bg_primary }}"
+                               oninput="syncHex('color_bg_primary', this.value)">
+                    </div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Background Sidebar</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_bg_secondary" value="{{ config.color_bg_secondary }}">
+                        <input type="text" class="form-control color-hex" id="color_bg_secondary_hex"
+                               value="{{ config.color_bg_secondary }}"
+                               oninput="syncHex('color_bg_secondary', this.value)">
+                    </div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Background Card</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_bg_card" value="{{ config.color_bg_card }}">
+                        <input type="text" class="form-control color-hex" id="color_bg_card_hex"
+                               value="{{ config.color_bg_card }}"
+                               oninput="syncHex('color_bg_card', this.value)">
+                    </div>
+                </div>
+
+                <div class="color-item">
+                    <label class="form-label">Teks Utama</label>
+                    <div class="color-input-wrap">
+                        <input type="color" id="color_text_primary" value="{{ config.color_text_primary }}">
+                        <input type="text" class="form-control color-hex" id="color_text_primary_hex"
+                               value="{{ config.color_text_primary }}"
+                               oninput="syncHex('color_text_primary', this.value)">
+                    </div>
+                </div>
+
+            </div>
+            <div style="margin-top:16px">
+                <button class="btn btn-ghost btn-sm" onclick="resetColors()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset ke Default
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Konfigurasi Idle Display -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-tv"></i> Tampilan Idle Display</h3>
+        </div>
+        <div class="card-body">
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">
+                Dikonfigurasi untuk semua perangkat display saat dalam mode idle.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">Teks Label</label>
+                <input type="text" class="form-control" id="idle_label"
+                       value="{{ config.idle_label }}" placeholder="TV Control System">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Warna Background (atas gradasi)</label>
+                <div class="color-input-wrap">
+                    <input type="color" id="idle_bg_from" value="{{ config.idle_bg_from }}">
+                    <input type="text" class="form-control color-hex" id="idle_bg_from_hex"
+                           value="{{ config.idle_bg_from }}"
+                           oninput="syncHex('idle_bg_from', this.value)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Warna Background (bawah gradasi)</label>
+                <div class="color-input-wrap">
+                    <input type="color" id="idle_bg_to" value="{{ config.idle_bg_to }}">
+                    <input type="text" class="form-control color-hex" id="idle_bg_to_hex"
+                           value="{{ config.idle_bg_to }}"
+                           oninput="syncHex('idle_bg_to', this.value)">
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+
+                <div class="settings-toggle-row">
+                    <div>
+                        <div class="settings-toggle-label">Tampilkan Jam</div>
+                        <div class="settings-toggle-desc">Jam digital besar di tengah layar</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="idle_show_clock"
+                               {% if config.idle_show_clock == 'true' %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="settings-toggle-row">
+                    <div>
+                        <div class="settings-toggle-label">Tampilkan Tanggal</div>
+                        <div class="settings-toggle-desc">Hari dan tanggal di bawah jam</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="idle_show_date"
+                               {% if config.idle_show_date == 'true' %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="settings-toggle-row">
+                    <div>
+                        <div class="settings-toggle-label">Tampilkan Ikon</div>
+                        <div class="settings-toggle-desc">Ikon broadcast di atas jam</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="idle_show_icon"
+                               {% if config.idle_show_icon == 'true' %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const COLOR_DEFAULTS = {
+    color_accent:       '#4c7bf5',
+    color_accent_hover: '#6390ff',
+    color_success:      '#2dd4a0',
+    color_warning:      '#f5a623',
+    color_danger:       '#f56565',
+    color_bg_primary:   '#0b0e14',
+    color_bg_secondary: '#111520',
+    color_bg_card:      '#161b28',
+    color_text_primary: '#e6e9f0',
+};
+
+function previewColor(varName, value) {
+    document.documentElement.style.setProperty('--' + varName, value);
+    const preview = document.getElementById('preview-' + varName);
+    if (preview) preview.style.background = value;
+    const hexInput = document.getElementById(varName.replace(/-/g, '_') + '_hex');
+    if (hexInput) hexInput.value = value;
+}
+
+function syncHex(id, value) {
+    if (/^#[0-9a-fA-F]{6}$/.test(value)) {
+        const picker = document.getElementById(id);
+        if (picker) picker.value = value;
+    }
+}
+
+function resetColors() {
+    Object.entries(COLOR_DEFAULTS).forEach(([key, val]) => {
+        const picker = document.getElementById(key);
+        const hex = document.getElementById(key + '_hex');
+        if (picker) picker.value = val;
+        if (hex) hex.value = val;
+        const varName = key.replace('color_', '').replace(/_/g, '-');
+        document.documentElement.style.setProperty('--' + varName, val);
+        const preview = document.getElementById('preview-' + varName);
+        if (preview) preview.style.background = val;
+    });
+    showToast('Warna direset ke default', 'success');
+}
+
+async function saveSettings() {
+    const payload = {};
+
+    // Warna
+    ['color_accent','color_accent_hover','color_success','color_warning','color_danger',
+     'color_bg_primary','color_bg_secondary','color_bg_card','color_text_primary'].forEach(key => {
+        const el = document.getElementById(key);
+        if (el) payload[key] = el.value;
+    });
+
+    // Idle display
+    payload.idle_label      = document.getElementById('idle_label').value.trim() || 'TV Control System';
+    payload.idle_bg_from    = document.getElementById('idle_bg_from').value;
+    payload.idle_bg_to      = document.getElementById('idle_bg_to').value;
+    payload.idle_show_clock = document.getElementById('idle_show_clock').checked ? 'true' : 'false';
+    payload.idle_show_date  = document.getElementById('idle_show_date').checked ? 'true' : 'false';
+    payload.idle_show_icon  = document.getElementById('idle_show_icon').checked ? 'true' : 'false';
+
+    try {
+        const resp = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!resp.ok) throw new Error('Gagal menyimpan');
+        showToast('Pengaturan tersimpan. Muat ulang halaman untuk melihat perubahan warna.', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+    }
+}
+
+// Live preview dari color picker saat halaman dimuat
+document.querySelectorAll('input[type="color"]').forEach(picker => {
+    picker.addEventListener('input', function() {
+        const hexId = this.id + '_hex';
+        const hexEl = document.getElementById(hexId);
+        if (hexEl) hexEl.value = this.value;
+    });
+});
+</script>
+{% endblock %}

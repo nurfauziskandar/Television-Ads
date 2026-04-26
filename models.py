@@ -95,3 +95,44 @@ class DevicePlaylist(db.Model):
     device_id = db.Column(db.Integer, db.ForeignKey('device.id'), nullable=False)
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlist.id'), nullable=False)
     playlist = db.relationship('Playlist')
+
+
+class AppConfig(db.Model):
+    """Konfigurasi aplikasi berupa pasangan key-value."""
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(64), unique=True, nullable=False)
+    value = db.Column(db.Text, nullable=False, default='')
+
+    @staticmethod
+    def get(key, default=''):
+        row = AppConfig.query.filter_by(key=key).first()
+        return row.value if row else default
+
+    @staticmethod
+    def set(key, value):
+        row = AppConfig.query.filter_by(key=key).first()
+        if row:
+            row.value = value
+        else:
+            db.session.add(AppConfig(key=key, value=value))
+
+# Nilai default untuk seluruh config
+CONFIG_DEFAULTS = {
+    # Warna admin panel
+    'color_accent':      '#4c7bf5',
+    'color_accent_hover':'#6390ff',
+    'color_success':     '#2dd4a0',
+    'color_warning':     '#f5a623',
+    'color_danger':      '#f56565',
+    'color_bg_primary':  '#0b0e14',
+    'color_bg_secondary':'#111520',
+    'color_bg_card':     '#161b28',
+    'color_text_primary':'#e6e9f0',
+    # Idle display
+    'idle_show_clock': 'true',
+    'idle_show_date':  'true',
+    'idle_show_icon':  'true',
+    'idle_label':      'TV Control System',
+    'idle_bg_from':    '#0a1628',
+    'idle_bg_to':      '#050a14',
+}

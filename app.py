@@ -9,7 +9,7 @@ from flask_socketio import SocketIO, emit, join_room
 from werkzeug.utils import secure_filename
 from functools import wraps
 from flask import session
-from models import db, AdminUser, Channel, Ad, Playlist, PlaylistItem, Device, DeviceChannel, DevicePlaylist
+from models import db, AdminUser, Channel, Ad, Playlist, PlaylistItem, Device, DeviceChannel, DevicePlaylist, AppConfig, CONFIG_DEFAULTS
 from config import Config
 
 # Patch on socketserver.BaseServer.handle_error to silently ignore ENOTCONN (errno 57).
@@ -449,6 +449,88 @@ def api_delete_user(uid):
     db.session.delete(user)
     db.session.commit()
     return jsonify({'status': 'deleted'})
+
+
+# ---------------------------------------------------------------------------
+# Admin — Settings
+# ---------------------------------------------------------------------------
+
+def _hex_to_rgba(hex_color, alpha):
+    """Konversi hex color (#rrggbb) ke string rgba() dengan alpha tertentu."""
+    h = hex_color.lstrip('#')
+    if len(h) == 3:
+        h = ''.join(c * 2 for c in h)
+    try:
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return f'rgba({r}, {g}, {b}, {alpha})'
+    except Exception:
+        return hex_color
+
+
+@app.route('/admin/settings')
+@admin_required
+def admin_settings():
+    config = {k: AppConfig.get(k, v) for k, v in CONFIG_DEFAULTS.items()}
+    return render_template('settings.html', page='settings', config=config)
+
+
+@app.route('/api/config', methods=['GET'])
+@admin_required
+def api_get_config():
+    return jsonify({k: AppConfig.get(k, v) for k, v in CONFIG_DEFAULTS.items()})
+
+
+@app.route('/api/config', methods=['POST'])
+@admin_required
+def api_update_config():
+    data = request.json or {}
+    for key, value in data.items():
+        if key in CONFIG_DEFAULTS:
+            AppConfig.set(key, str(value))
+    db.session.commit()
+    return jsonify({'status': 'ok'})
+
+
+@app.route('/api/config/css')
+def api_config_css():
+    """Endpoint CSS yang meng-override variabel warna admin panel."""
+    accent       = AppConfig.get('color_accent',       CONFIG_DEFAULTS['color_accent'])
+    accent_hover = AppConfig.get('color_accent_hover',  CONFIG_DEFAULTS['color_accent_hover'])
+    success      = AppConfig.get('color_success',       CONFIG_DEFAULTS['color_success'])
+    warning      = AppConfig.get('color_warning',       CONFIG_DEFAULTS['color_warning'])
+    danger       = AppConfig.get('color_danger',        CONFIG_DEFAULTS['color_danger'])
+    bg_primary   = AppConfig.get('color_bg_primary',    CONFIG_DEFAULTS['color_bg_primary'])
+    bg_secondary = AppConfig.get('color_bg_secondary',  CONFIG_DEFAULTS['color_bg_secondary'])
+    bg_card      = AppConfig.get('color_bg_card',       CONFIG_DEFAULTS['color_bg_card'])
+    text_primary = AppConfig.get('color_text_primary',  CONFIG_DEFAULTS['color_text_primary'])
+
+    css = f""":root {{
+  --accent:          {accent};
+  --accent-hover:    {accent_hover};
+  --accent-subtle:   {_hex_to_rgba(accent, 0.12)};
+  --success:         {success};
+  --success-subtle:  {_hex_to_rgba(success, 0.12)};
+  --warning:         {warning};
+  --warning-subtle:  {_hex_to_rgba(warning, 0.12)};
+  --danger:          {danger};
+  --danger-subtle:   {_hex_to_rgba(danger, 0.12)};
+  --bg-primary:      {bg_primary};
+  --bg-secondary:    {bg_secondary};
+  --bg-card:         {bg_card};
+  --text-primary:    {text_primary};
+}}"""
+    return Response(css, content_type='text/css',
+                    headers={'Cache-Control': 'no-cache'})
+
+
+@app.route('/api/config/display')
+def api_config_display():
+    """Konfigurasi idle display — tidak memerlukan auth (diakses display client)."""
+    return jsonify({
+        k: AppConfig.get(k, CONFIG_DEFAULTS[k])
+        for k in ('idle_show_clock', 'idle_show_date', 'idle_show_icon',
+                  'idle_label', 'idle_bg_from', 'idle_bg_to')
+    })
 
 
 # ---------------------------------------------------------------------------
@@ -1016,6 +1098,11 @@ def on_socket_error(e):
 
 with app.app_context():
     db.create_all()
+    # Seed config defaults jika belum ada
+    for k, v in CONFIG_DEFAULTS.items():
+        if not AppConfig.query.filter_by(key=k).first():
+            db.session.add(AppConfig(key=k, value=v))
+    db.session.commit()
     # Migrasi manual: tambah kolom 'role' ke tabel admin_user jika belum ada.
     # db.create_all() tidak mengubah tabel yang sudah ada, sehingga perlu ALTER TABLE.
     # Gunakan begin() agar DDL otomatis di-commit saat blok selesai.
