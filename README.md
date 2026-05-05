@@ -525,31 +525,34 @@ Admin memiliki akses penuh ke seluruh menu pengelolaan. Setiap permintaan tulis 
 
 ```mermaid
 flowchart TD
-    Start([Mulai]) --> Buka[Buka /login]
-    Buka --> Input[Input username & password]
-    Input --> LoginValid{Kredensial &\nrole = admin?}
-    LoginValid -- Tidak --> ErrLogin[Tampilkan pesan error]
-    ErrLogin --> Input
-    LoginValid -- Ya --> SetSession[(Set session:\nadmin_role = admin)]
-    SetSession --> Dashboard[Tampilkan Dashboard\nStatistik + Aksi Cepat]
-    Dashboard --> PilihMenu{Pilih menu}
+    Start([Mulai]) --> Login[Buka /login]
+    Login --> Input[Input username & password]
+    Input --> AuthQ{Kredensial valid?\nrole = admin?}
+    AuthQ -- Tidak --> ErrAuth([Pesan error])
+    ErrAuth --> Input
+    AuthQ -- Ya --> SS[("Set session\nadmin_role = admin")]
+    SS --> Dash[Dashboard — Statistik + Aksi Cepat]
+    Dash --> Menu
 
-    PilihMenu --> Channel[Kelola Channel\nTambah / Edit / Hapus / Import M3U]
-    PilihMenu --> Iklan[Kelola Iklan\nUpload / Toggle / Hapus]
-    PilihMenu --> Playlist[Kelola Playlist\nBuat / Susun item / Hapus]
-    PilihMenu --> Perangkat[Kelola Perangkat\nDaftarkan / Token / Assign]
-    PilihMenu --> Kontrol[Kontrol Display\nPush channel / playlist live]
-    PilihMenu --> User[Kelola User\nTambah / Edit role / Hapus]
-    PilihMenu --> Setting[Kelola Setting\nWarna / Idle display / Logo]
+    subgraph Menu[Pilih & Jalankan Aksi Menu]
+        direction LR
+        M1[Channel\nTambah / Edit / Hapus / M3U]
+        M2[Iklan\nUpload / Toggle / Hapus]
+        M3[Playlist\nBuat / Susun / Hapus]
+        M4[Perangkat\nDaftar / Token / Assign]
+        M5[Kontrol TV\nPush channel / playlist]
+        M6[User\nTambah / Edit role / Hapus]
+        M7[Setting\nWarna / Idle / Logo]
+    end
 
-    Channel & Iklan & Playlist & Perangkat & Kontrol & User & Setting --> Submit[Submit ke server]
-    Submit --> AdminReq{Validasi &\n@admin_required?}
-    AdminReq -- Tidak --> Err403[403 / Pesan Error]
-    Err403 --> Submit
-    AdminReq -- Ya --> SaveDB[(Simpan ke tvads.db\n+ broadcast Socket.IO ke display)]
-    SaveDB --> Lanjut{Lanjut menu lain?}
-    Lanjut -- Ya --> PilihMenu
-    Lanjut -- Tidak --> Logout[Logout]
+    Menu --> Submit[Submit ke server]
+    Submit --> ValQ{@admin_required\nlolos?}
+    ValQ -- Tidak --> Err([403 Forbidden])
+    Err --> Submit
+    ValQ -- Ya --> DB[("Simpan ke tvads.db\n+ Socket.IO broadcast ke display")]
+    DB --> ContQ{Lanjut menu lain?}
+    ContQ -- Ya --> Menu
+    ContQ -- Tidak --> Logout[Logout]
     Logout --> End([Selesai])
 ```
 
@@ -561,29 +564,29 @@ User hanya dapat mengakses Dashboard dan halaman Iklan. Akses ke URL admin lain 
 
 ```mermaid
 flowchart TD
-    Start([Mulai]) --> Buka[Buka /login]
-    Buka --> Input[Input username & password]
-    Input --> LoginValid{Kredensial valid?}
-    LoginValid -- Tidak --> ErrLogin[Tampilkan pesan error]
-    ErrLogin --> Input
-    LoginValid -- Ya --> SetSession[(Set session:\nadmin_role = user)]
-    SetSession --> Dashboard["Tampilkan Dashboard (User)\nStatistik saja — tanpa Aksi Cepat\nmenu Channel / Playlist / Perangkat disembunyikan"]
-    Dashboard --> PilihAksi{Pilih aksi}
+    Start([Mulai]) --> Login[Buka /login]
+    Login --> Input[Input username & password]
+    Input --> AuthQ{Kredensial valid?}
+    AuthQ -- Tidak --> ErrAuth([Pesan error])
+    ErrAuth --> Input
+    AuthQ -- Ya --> SS[("Set session\nadmin_role = user")]
+    SS --> Dash["Dashboard (User)\nStatistik saja — tanpa Aksi Cepat\nMenu Channel / Playlist / Perangkat disembunyikan"]
+    Dash --> AksiQ{Pilih aksi}
 
-    PilihAksi -- Lihat Iklan --> LihatIklan["Lihat daftar Iklan\nread-only — tanpa tombol Edit / Hapus / Toggle"]
-    PilihAksi -- Tambah Iklan --> TambahIklan[Upload file + isi nama & durasi]
-    PilihAksi -- "Akses URL admin\n/admin/devices, /admin/users, dst." --> AksesAdmin
+    AksiQ -- Lihat Iklan --> Lihat["Daftar iklan — read only\ntanpa Edit / Hapus / Toggle"]
+    AksiQ -- Tambah Iklan --> Upload[Upload file + isi nama & durasi]
+    AksiQ -- Akses URL admin --> FB[["@admin_required tolak\n403 Forbidden / redirect dashboard"]]
 
-    TambahIklan --> Validate{File & data valid?}
-    Validate -- Tidak --> ErrVal[Pesan Error]
-    ErrVal --> TambahIklan
-    Validate -- Ya --> SaveDB[(Simpan ke tvads.db\nfile → static/uploads/ads)]
+    Upload --> ValQ{File & data valid?}
+    ValQ -- Tidak --> ErrVal([Pesan error])
+    ErrVal --> Upload
+    ValQ -- Ya --> DB[("Simpan ke tvads.db\nfile → static/uploads/ads")]
 
-    AksesAdmin[["@admin_required tolak\nredirect dashboard / 403 Forbidden"]]
-
-    LihatIklan & SaveDB & AksesAdmin --> Lanjut{Lanjut aksi lain?}
-    Lanjut -- Ya --> PilihAksi
-    Lanjut -- Tidak --> Logout[Logout]
+    Lihat --> ContQ{Lanjut aksi lain?}
+    DB --> ContQ
+    FB --> ContQ
+    ContQ -- Ya --> AksiQ
+    ContQ -- Tidak --> Logout[Logout]
     Logout --> End([Selesai])
 ```
 
@@ -662,39 +665,44 @@ erDiagram
 
 ### Alur Operasi Database
 
+**Inisialisasi & Migrasi**
+
 ```mermaid
 flowchart TD
-    subgraph Write["Operasi Tulis — POST / PUT / DELETE"]
-        W1[API Request masuk] --> W2{Autentikasi\n& Otorisasi}
-        W2 -- Gagal --> W3["401 Unauthorized\n/ 403 Forbidden"]
-        W2 -- Lolos --> W4{Validasi data\ninput}
-        W4 -- Tidak Valid --> W5[400 Bad Request\nPesan error ke client]
-        W4 -- Valid --> W6[(Tulis ke tvads.db\nvia SQLAlchemy ORM)]
-        W6 --> W7[db.session.commit]
-        W7 --> W8{Perlu broadcast\nke display?}
-        W8 -- Ya --> W9["Socket.IO emit ke room\ndevice_&lt;token&gt;"]
-        W8 -- Tidak --> W10[Respons JSON 200]
-        W9 --> W10
-    end
+    I1[python app.py] --> I2{tvads.db sudah ada?}
+    I2 -- Tidak --> I3[db.create_all — buat semua tabel]
+    I2 -- Ya --> I4{Kolom role ada\ndi tabel admin_user?}
+    I3 --> I4
+    I4 -- Tidak --> I5["ALTER TABLE admin_user\nADD COLUMN role DEFAULT 'admin'"]
+    I4 -- Ya --> I6[Seed AppConfig defaults\njika key belum ada]
+    I5 --> I6
+    I6 --> I7([Server siap — port 8000])
+```
 
-    subgraph Read["Operasi Baca — GET"]
-        R1[API Request masuk] --> R2{Autentikasi}
-        R2 -- Gagal --> R3[401 Unauthorized]
-        R2 -- Lolos --> R4[(Query tvads.db\nvia SQLAlchemy ORM)]
-        R4 --> R5[Serialisasi ke dict / JSON]
-        R5 --> R6[Respons JSON 200]
-    end
+**Operasi Baca — GET**
 
-    subgraph Init["Inisialisasi Aplikasi"]
-        I1[python app.py] --> I2{tvads.db\nsudah ada?}
-        I2 -- Tidak --> I3[db.create_all\nBuat semua tabel]
-        I2 -- Ya --> I4{Kolom role\nada di admin_user?}
-        I3 --> I4
-        I4 -- Tidak --> I5["ALTER TABLE admin_user\nADD COLUMN role DEFAULT 'admin'"]
-        I4 -- Ya --> I6[Seed AppConfig defaults\njika belum ada]
-        I5 --> I6
-        I6 --> I7[Server siap — port 8000]
-    end
+```mermaid
+flowchart TD
+    R1[Request GET /api/...] --> R2{Autentikasi valid?}
+    R2 -- Tidak --> R3([401 Unauthorized])
+    R2 -- Ya --> R4[(Query tvads.db\nvia SQLAlchemy ORM)]
+    R4 --> R5[Serialisasi ke JSON]
+    R5 --> R6([Respons 200 OK])
+```
+
+**Operasi Tulis — POST / PUT / DELETE**
+
+```mermaid
+flowchart TD
+    W1[Request POST/PUT/DELETE] --> W2{Autentikasi &\nOtorisasi?}
+    W2 -- Gagal --> W3([401 / 403])
+    W2 -- Lolos --> W4{Validasi data input?}
+    W4 -- Tidak Valid --> W5([400 Bad Request])
+    W4 -- Valid --> W6[("Tulis ke tvads.db\ndb.session.commit")]
+    W6 --> W7{Perlu broadcast\nSocket.IO?}
+    W7 -- Ya --> W8[emit ke room device_token]
+    W7 -- Tidak --> W9([Respons 200 OK])
+    W8 --> W9
 ```
 
 ---
