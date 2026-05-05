@@ -17,6 +17,10 @@ Sistem kontrol televisi berbasis web yang memungkinkan sebuah komputer (Komputer
 - [Alur Kerja Sistem](#alur-kerja-sistem)
 - [Diagram State Display](#diagram-state-display)
 - [Alur Rotasi Iklan](#alur-rotasi-iklan)
+- [Activity Diagram](#activity-diagram)
+  - [Role Admin](#role-admin)
+  - [Role User](#role-user)
+- [Skema & Alur Database](#skema--alur-database)
 - [Struktur Proyek](#struktur-proyek)
 - [API Reference](#api-reference)
 - [Troubleshooting](#troubleshooting)
@@ -513,6 +517,188 @@ flowchart TD
 
 ---
 
+## Activity Diagram
+
+### Role Admin
+
+Admin memiliki akses penuh ke seluruh menu pengelolaan. Setiap permintaan tulis divalidasi server-side oleh `@admin_required`.
+
+```mermaid
+flowchart TD
+    Start([Mulai]) --> Buka[Buka /login]
+    Buka --> Input[Input username & password]
+    Input --> LoginValid{Kredensial &\nrole = admin?}
+    LoginValid -- Tidak --> ErrLogin[Tampilkan pesan error]
+    ErrLogin --> Input
+    LoginValid -- Ya --> SetSession[(Set session:\nadmin_role = admin)]
+    SetSession --> Dashboard[Tampilkan Dashboard\nStatistik + Aksi Cepat]
+    Dashboard --> PilihMenu{Pilih menu}
+
+    PilihMenu --> Channel[Kelola Channel\nTambah / Edit / Hapus / Import M3U]
+    PilihMenu --> Iklan[Kelola Iklan\nUpload / Toggle / Hapus]
+    PilihMenu --> Playlist[Kelola Playlist\nBuat / Susun item / Hapus]
+    PilihMenu --> Perangkat[Kelola Perangkat\nDaftarkan / Token / Assign]
+    PilihMenu --> Kontrol[Kontrol Display\nPush channel / playlist live]
+    PilihMenu --> User[Kelola User\nTambah / Edit role / Hapus]
+    PilihMenu --> Setting[Kelola Setting\nWarna / Idle display / Logo]
+
+    Channel & Iklan & Playlist & Perangkat & Kontrol & User & Setting --> Submit[Submit ke server]
+    Submit --> AdminReq{Validasi &\n@admin_required?}
+    AdminReq -- Tidak --> Err403[403 / Pesan Error]
+    Err403 --> Submit
+    AdminReq -- Ya --> SaveDB[(Simpan ke tvads.db\n+ broadcast Socket.IO ke display)]
+    SaveDB --> Lanjut{Lanjut menu lain?}
+    Lanjut -- Ya --> PilihMenu
+    Lanjut -- Tidak --> Logout[Logout]
+    Logout --> End([Selesai])
+```
+
+---
+
+### Role User
+
+User hanya dapat mengakses Dashboard dan halaman Iklan. Akses ke URL admin lain ditolak server-side (`403 / redirect`).
+
+```mermaid
+flowchart TD
+    Start([Mulai]) --> Buka[Buka /login]
+    Buka --> Input[Input username & password]
+    Input --> LoginValid{Kredensial valid?}
+    LoginValid -- Tidak --> ErrLogin[Tampilkan pesan error]
+    ErrLogin --> Input
+    LoginValid -- Ya --> SetSession[(Set session:\nadmin_role = user)]
+    SetSession --> Dashboard["Tampilkan Dashboard (User)\nStatistik saja — tanpa Aksi Cepat\nmenu Channel / Playlist / Perangkat disembunyikan"]
+    Dashboard --> PilihAksi{Pilih aksi}
+
+    PilihAksi -- Lihat Iklan --> LihatIklan["Lihat daftar Iklan\nread-only — tanpa tombol Edit / Hapus / Toggle"]
+    PilihAksi -- Tambah Iklan --> TambahIklan[Upload file + isi nama & durasi]
+    PilihAksi -- "Akses URL admin\n/admin/devices, /admin/users, dst." --> AksesAdmin
+
+    TambahIklan --> Validate{File & data valid?}
+    Validate -- Tidak --> ErrVal[Pesan Error]
+    ErrVal --> TambahIklan
+    Validate -- Ya --> SaveDB[(Simpan ke tvads.db\nfile → static/uploads/ads)]
+
+    AksesAdmin[["@admin_required tolak\nredirect dashboard / 403 Forbidden"]]
+
+    LihatIklan & SaveDB & AksesAdmin --> Lanjut{Lanjut aksi lain?}
+    Lanjut -- Ya --> PilihAksi
+    Lanjut -- Tidak --> Logout[Logout]
+    Logout --> End([Selesai])
+```
+
+---
+
+## Skema & Alur Database
+
+### Entity Relationship
+
+```mermaid
+erDiagram
+    AdminUser {
+        int id PK
+        string username
+        string password_hash
+        string role
+    }
+    Channel {
+        int id PK
+        string name
+        string url
+        string source_type
+        string filename
+        string logo_url
+        string group
+        int order
+        bool is_active
+    }
+    Ad {
+        int id PK
+        string name
+        string filename
+        string file_type
+        int duration
+        bool is_active
+    }
+    Playlist {
+        int id PK
+        string name
+        bool is_active
+    }
+    PlaylistItem {
+        int id PK
+        int playlist_id FK
+        int ad_id FK
+        int order
+    }
+    Device {
+        int id PK
+        string name
+        string location
+        string token
+        bool is_active
+    }
+    DeviceChannel {
+        int device_id FK
+        int channel_id FK
+    }
+    DevicePlaylist {
+        int device_id FK
+        int playlist_id FK
+    }
+    AppConfig {
+        int id PK
+        string key
+        string value
+    }
+
+    Playlist ||--o{ PlaylistItem : memiliki
+    Ad ||--o{ PlaylistItem : "dimasukkan ke"
+    Device ||--o{ DeviceChannel : mempunyai
+    Channel ||--o{ DeviceChannel : "di-assign ke"
+    Device ||--o{ DevicePlaylist : mempunyai
+    Playlist ||--o{ DevicePlaylist : "di-assign ke"
+```
+
+### Alur Operasi Database
+
+```mermaid
+flowchart TD
+    subgraph Write["Operasi Tulis — POST / PUT / DELETE"]
+        W1[API Request masuk] --> W2{Autentikasi\n& Otorisasi}
+        W2 -- Gagal --> W3["401 Unauthorized\n/ 403 Forbidden"]
+        W2 -- Lolos --> W4{Validasi data\ninput}
+        W4 -- Tidak Valid --> W5[400 Bad Request\nPesan error ke client]
+        W4 -- Valid --> W6[(Tulis ke tvads.db\nvia SQLAlchemy ORM)]
+        W6 --> W7[db.session.commit]
+        W7 --> W8{Perlu broadcast\nke display?}
+        W8 -- Ya --> W9["Socket.IO emit ke room\ndevice_&lt;token&gt;"]
+        W8 -- Tidak --> W10[Respons JSON 200]
+        W9 --> W10
+    end
+
+    subgraph Read["Operasi Baca — GET"]
+        R1[API Request masuk] --> R2{Autentikasi}
+        R2 -- Gagal --> R3[401 Unauthorized]
+        R2 -- Lolos --> R4[(Query tvads.db\nvia SQLAlchemy ORM)]
+        R4 --> R5[Serialisasi ke dict / JSON]
+        R5 --> R6[Respons JSON 200]
+    end
+
+    subgraph Init["Inisialisasi Aplikasi"]
+        I1[python app.py] --> I2{tvads.db\nsudah ada?}
+        I2 -- Tidak --> I3[db.create_all\nBuat semua tabel]
+        I2 -- Ya --> I4{Kolom role\nada di admin_user?}
+        I3 --> I4
+        I4 -- Tidak --> I5["ALTER TABLE admin_user\nADD COLUMN role DEFAULT 'admin'"]
+        I4 -- Ya --> I6[Seed AppConfig defaults\njika belum ada]
+        I5 --> I6
+        I6 --> I7[Server siap — port 8000]
+    end
+```
+
+---
+
 ## Struktur Proyek
 
 ```
@@ -651,7 +837,7 @@ Television-Ads/
 | `color_text_primary` | `#e6e9f0` | Warna teks utama |
 | `idle_show_clock` | `true` | Tampilkan jam di idle |
 | `idle_show_date` | `true` | Tampilkan tanggal di idle |
-| `idle_show_icon` | `true` | Tampilkan ikon di idle |
+| `idle_logo` | `` | Path logo custom di idle (kosong = tampilkan ikon broadcast) |
 | `idle_label` | `TV Control System` | Teks label di idle |
 | `idle_bg_from` | `#0a1628` | Warna gradasi atas idle background |
 | `idle_bg_to` | `#050a14` | Warna gradasi bawah idle background |

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 720 1090" width="720" height="1090" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>text { font-family: 'Segoe UI', Arial, sans-serif; }</style>
+  <filter id="sh" x="-8%" y="-8%" width="120%" height="120%">
+    <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#0000001a"/>
+  </filter>
+  <marker id="a" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#475569"/>
+  </marker>
+  <marker id="ar" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#ef4444"/>
+  </marker>
+  <marker id="ag" viewBox="0 0 10 6" refX="9" refY="3" markerWidth="7" markerHeight="5" orient="auto">
+    <path d="M0,0 L10,3 L0,6 Z" fill="#16a34a"/>
+  </marker>
+</defs>
+
+<rect width="720" height="1090" fill="#ffffff"/>
+<rect x="1" y="1" width="718" height="1088" rx="6" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- Judul -->
+<text x="360" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">Activity Diagram — Role User</text>
+<text x="360" y="50" text-anchor="middle" font-size="11" fill="#64748b">Television Ads — akses terbatas ke Dashboard &amp; tambah Iklan</text>
+<line x1="50" y1="62" x2="670" y2="62" stroke="#e2e8f0" stroke-width="1.5"/>
+
+<!-- Legenda -->
+<circle cx="60" cy="80" r="6" fill="#1e293b"/>
+<text x="74" y="84" font-size="10" fill="#64748b">Initial / Final</text>
+<rect x="170" y="74" width="14" height="12" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="190" y="84" font-size="10" fill="#64748b">Action</text>
+<polygon points="260,80 268,73 276,80 268,87" fill="none" stroke="#d97706" stroke-width="1.5"/>
+<text x="282" y="84" font-size="10" fill="#64748b">Decision</text>
+<rect x="360" y="73" width="60" height="14" rx="2" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="428" y="84" font-size="10" fill="#64748b">Datastore</text>
+<rect x="520" y="74" width="14" height="12" rx="3" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="540" y="84" font-size="10" fill="#64748b">Aksi terlarang (admin only)</text>
+<line x1="50" y1="98" x2="670" y2="98" stroke="#e2e8f0" stroke-width="1"/>
+
+<!-- 1. Start -->
+<circle cx="360" cy="118" r="10" fill="#1e293b"/>
+<line x1="360" y1="128" x2="360" y2="148" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 2. Buka /login -->
+<rect x="260" y="150" width="200" height="38" rx="19" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="174" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Buka aplikasi /login</text>
+<line x1="360" y1="188" x2="360" y2="208" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 3. Input kredensial -->
+<rect x="260" y="210" width="200" height="38" rx="19" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="234" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Input username &amp; password</text>
+<line x1="360" y1="248" x2="360" y2="268" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 4. Decision login valid -->
+<polygon points="360,268 450,308 360,348 270,308" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="304" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Kredensial</text>
+<text x="360" y="320" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">valid?</text>
+
+<!-- Tidak -> error -> loop ke input -->
+<text x="458" y="304" font-size="10" fill="#ef4444">Tidak</text>
+<path d="M450,308 L580,308 L580,229 L460,229" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+<rect x="496" y="288" width="80" height="28" rx="5" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="536" y="301" text-anchor="middle" font-size="10" fill="#dc2626">Pesan</text>
+<text x="536" y="313" text-anchor="middle" font-size="10" fill="#dc2626">Error</text>
+
+<!-- Ya -->
+<text x="368" y="364" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+<line x1="360" y1="348" x2="360" y2="372" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 5. Datastore: set session role=user -->
+<rect x="245" y="374" width="230" height="40" rx="2" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="391" text-anchor="middle" font-size="12" font-weight="600" fill="#4c1d95">Set session admin_role = user</text>
+<text x="360" y="407" text-anchor="middle" font-size="11" fill="#4c1d95">Flask session cookie</text>
+<line x1="360" y1="414" x2="360" y2="434" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 6. Dashboard user -->
+<rect x="240" y="436" width="240" height="50" rx="22" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="453" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Tampilkan Dashboard (User)</text>
+<text x="360" y="468" text-anchor="middle" font-size="10" fill="#1e40af">Statistik saja — tanpa Aksi Cepat</text>
+<text x="360" y="481" text-anchor="middle" font-size="10" fill="#1e40af">menu Channel/Playlist/Perangkat tersembunyi</text>
+<line x1="360" y1="486" x2="360" y2="506" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- 7. Pilih aksi -->
+<polygon points="360,506 470,549 360,592 250,549" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="544" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Pilih aksi</text>
+<text x="360" y="560" text-anchor="middle" font-size="11" fill="#78350f">(Lihat / Tambah Iklan /</text>
+<text x="360" y="574" text-anchor="middle" font-size="11" fill="#78350f">Akses URL admin)</text>
+
+<!-- Cabang kiri: Lihat -->
+<line x1="250" y1="549" x2="140" y2="549" stroke="#475569" stroke-width="1.5"/>
+<line x1="140" y1="549" x2="140" y2="618" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="180" y="544" font-size="10" fill="#475569">Lihat</text>
+
+<!-- Cabang tengah: Tambah -->
+<line x1="360" y1="592" x2="360" y2="618" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="370" y="610" font-size="10" fill="#475569">Tambah</text>
+
+<!-- Cabang kanan: Akses admin -->
+<line x1="470" y1="549" x2="580" y2="549" stroke="#475569" stroke-width="1.5"/>
+<line x1="580" y1="549" x2="580" y2="618" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ar)"/>
+<text x="500" y="544" font-size="10" fill="#ef4444">Akses /admin/*</text>
+
+<!-- Branch boxes (y=620-664) -->
+<!-- Lihat box -->
+<rect x="60" y="620" width="160" height="44" rx="22" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="140" y="637" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Lihat daftar Iklan</text>
+<text x="140" y="653" text-anchor="middle" font-size="10" fill="#1e40af">read-only, tanpa Edit/Hapus</text>
+
+<!-- Tambah box -->
+<rect x="280" y="620" width="160" height="44" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="637" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Tambah Iklan</text>
+<text x="360" y="653" text-anchor="middle" font-size="10" fill="#1e40af">Upload + isi nama/durasi</text>
+
+<!-- Akses admin (red, ditolak) -->
+<rect x="500" y="620" width="160" height="44" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2" filter="url(#sh)"/>
+<text x="580" y="637" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">@admin_required tolak</text>
+<text x="580" y="653" text-anchor="middle" font-size="10" fill="#dc2626">redirect dashboard / 403</text>
+
+<!-- Tambah → validate -->
+<line x1="360" y1="664" x2="360" y2="688" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- Validate diamond -->
+<polygon points="360,688 450,728 360,768 270,728" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="724" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">File &amp; data</text>
+<text x="360" y="740" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">valid?</text>
+
+<!-- Tidak: loop balik ke Tambah box lewat kiri (tidak nabrak cabang Lihat di x=140) -->
+<text x="240" y="724" font-size="10" fill="#ef4444">Tidak</text>
+<path d="M270,728 L230,728 L230,600 L300,600 L300,620" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+
+<!-- Ya ↓ -->
+<text x="368" y="784" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+<line x1="360" y1="768" x2="360" y2="790" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- Save DB -->
+<rect x="280" y="792" width="160" height="44" rx="2" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="809" text-anchor="middle" font-size="12" font-weight="600" fill="#4c1d95">Simpan ke tvads.db</text>
+<text x="360" y="826" text-anchor="middle" font-size="10" fill="#4c1d95">file → static/uploads/ads</text>
+
+<!-- Konvergensi vertikal ke join bar y=870 -->
+<line x1="140" y1="664" x2="140" y2="870" stroke="#475569" stroke-width="1.5"/>
+<line x1="360" y1="836" x2="360" y2="870" stroke="#475569" stroke-width="1.5"/>
+<line x1="580" y1="664" x2="580" y2="870" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+<!-- Join bar -->
+<rect x="60" y="870" width="600" height="8" fill="#1e293b"/>
+<line x1="360" y1="878" x2="360" y2="900" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+
+<!-- Decision lanjut -->
+<polygon points="360,900 450,938 360,976 270,938" fill="#fffbeb" stroke="#d97706" stroke-width="2" filter="url(#sh)"/>
+<text x="360" y="934" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">Lanjut</text>
+<text x="360" y="950" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">aksi lain?</text>
+
+<!-- Ya: loop kiri kembali ke Pilih aksi -->
+<path d="M270,938 L40,938 L40,549 L250,549" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="6,3" fill="none" marker-end="url(#ag)"/>
+<text x="120" y="932" text-anchor="middle" font-size="11" fill="#16a34a" font-weight="600">Ya</text>
+
+<!-- Tidak: kanan → bawah → logout -->
+<text x="458" y="934" font-size="11" fill="#475569" font-weight="600">Tidak</text>
+<path d="M450,938 L610,938 L610,988" stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+
+<!-- Logout -->
+<rect x="530" y="990" width="160" height="32" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#sh)"/>
+<text x="610" y="1010" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Logout</text>
+
+<!-- Final -->
+<line x1="610" y1="1022" x2="610" y2="1042" stroke="#475569" stroke-width="1.8" marker-end="url(#a)"/>
+<circle cx="610" cy="1052" r="9" fill="none" stroke="#1e293b" stroke-width="2"/>
+<circle cx="610" cy="1052" r="5" fill="#1e293b"/>
+
+</svg>
