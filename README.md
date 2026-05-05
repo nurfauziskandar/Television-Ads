@@ -716,8 +716,8 @@ Television-Ads/
 ├── models.py               # Model database (AdminUser, Channel, Ad, Playlist, Device, AppConfig, ...)
 ├── requirements.txt        # Dependensi Python
 ├── list_iptv.txt           # Daftar channel IPTV Indonesia (format M3U)
-├── .secret_key             # Secret key sesi (digenerate otomatis, jangan di-commit)
-├── tvads.db                # Database SQLite (digenerate otomatis)
+├── .secret_key             # Secret key sesi — digenerate otomatis, TIDAK di-commit (.gitignore)
+├── tvads.db                # Database SQLite — digenerate otomatis, TIDAK di-commit (.gitignore)
 ├── README.md               # Dokumentasi
 ├── static/
 │   ├── css/
