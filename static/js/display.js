@@ -40,6 +40,12 @@
     var currentChannelName = '';
     var currentPlaylistName = '';
 
+    // ---- Ticker ----
+    var tickerBar   = document.getElementById('ticker-bar');
+    var tickerTrack = document.getElementById('ticker-track');
+    var tickerTextA = document.getElementById('ticker-text-a');
+    var tickerTextB = document.getElementById('ticker-text-b');
+
     // ---- Token ----
     var token = new URLSearchParams(window.location.search).get('token');
 
@@ -111,7 +117,47 @@
             case 'set_volume':
                 setVolume(data.volume);
                 break;
+            case 'set_ticker':
+                applyTicker(data);
+                break;
         }
+    }
+
+    // ---- Ticker ----
+    function applyTicker(cfg) {
+        var enabled = cfg.enabled === true || cfg.enabled === 'true';
+        var text    = cfg.text || '';
+        var speed   = parseInt(cfg.speed, 10) || 40;
+
+        if (!enabled || !text.trim()) {
+            tickerBar.style.display = 'none';
+            return;
+        }
+
+        if (cfg.bg)        tickerBar.style.background = cfg.bg;
+        if (cfg.font_size) {
+            var fs = parseInt(cfg.font_size, 10) + 'px';
+            tickerTextA.style.fontSize = fs;
+            tickerTextB.style.fontSize = fs;
+            tickerBar.style.height = (parseInt(cfg.font_size, 10) + 16) + 'px';
+        }
+        if (cfg.color) {
+            tickerTextA.style.color = cfg.color;
+            tickerTextB.style.color = cfg.color;
+            tickerTrack.querySelectorAll('.ticker-sep').forEach(function(s) {
+                s.style.color = cfg.color;
+            });
+        }
+
+        tickerTextA.textContent = text;
+        tickerTextB.textContent = text;
+        tickerBar.style.display = 'flex';
+
+        // Duration: wider text = longer duration. Speed = px/s.
+        var trackWidth = tickerTrack.scrollWidth;
+        var halfWidth  = trackWidth / 2 || 800;
+        var duration   = halfWidth / speed;
+        tickerTrack.style.animationDuration = duration + 's';
     }
 
     // ---- Screen Switching ----
@@ -476,7 +522,17 @@
 
     fetch('/api/config/display')
         .then(function(r) { return r.json(); })
-        .then(applyIdleConfig)
+        .then(function(cfg) {
+            applyIdleConfig(cfg);
+            applyTicker({
+                enabled:   cfg.ticker_enabled,
+                text:      cfg.ticker_text,
+                speed:     cfg.ticker_speed,
+                font_size: cfg.ticker_font_size,
+                bg:        cfg.ticker_bg,
+                color:     cfg.ticker_color,
+            });
+        })
         .catch(function() {});
 
     // ---- Init ----

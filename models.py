@@ -135,4 +135,11 @@ CONFIG_DEFAULTS = {
     'idle_label':      'TV Control System',
     'idle_bg_from':    '#0a1628',
     'idle_bg_to':      '#050a14',
+    # Running text / ticker
+    'ticker_enabled':    'false',
+    'ticker_text':       '',
+    'ticker_speed':      '40',
+    'ticker_font_size':  '14',
+    'ticker_bg':         'rgba(0,0,0,0.7)',
+    'ticker_color':      '#ffffff',
 }

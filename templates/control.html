@@ -115,6 +115,49 @@
         </div>
     </div>
 
+    <!-- Running Text -->
+    <div class="card" style="margin-top:16px">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-scroll"></i> Running Text</h3>
+            <label class="toggle">
+                <input type="checkbox" id="ticker-enabled" onchange="syncTicker()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="card-body">
+            <div style="margin-bottom:12px">
+                <label class="form-label"><i class="fa-solid fa-align-left"></i> Teks</label>
+                <input type="text" class="form-control" id="ticker-text"
+                       placeholder="Masukkan teks berjalan..."
+                       maxlength="50"
+                       oninput="updateTickerChar();syncTickerDebounced()">
+                <div style="text-align:right;font-size:12px;color:var(--text-muted);margin-top:4px">
+                    <span id="ticker-char-count">0</span>/50
+                </div>
+            </div>
+            <div class="volume-control" style="margin-bottom:12px">
+                <label class="form-label" style="margin-bottom:0">
+                    <i class="fa-solid fa-gauge"></i> Kecepatan
+                </label>
+                <div class="volume-slider-wrap">
+                    <input type="range" class="volume-slider" id="ticker-speed"
+                           min="10" max="150" value="40" oninput="updateTickerSpeed(this.value)">
+                    <span class="volume-value" id="ticker-speed-value">40 px/s</span>
+                </div>
+            </div>
+            <div class="volume-control">
+                <label class="form-label" style="margin-bottom:0">
+                    <i class="fa-solid fa-text-height"></i> Ukuran Font
+                </label>
+                <div class="volume-slider-wrap">
+                    <input type="range" class="volume-slider" id="ticker-fontsize"
+                           min="10" max="48" value="14" oninput="updateTickerFontSize(this.value)">
+                    <span class="volume-value" id="ticker-fontsize-value">14px</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% else %}
@@ -307,6 +350,40 @@ async function sendCommand(action, extra) {
         method: 'POST',
         body: JSON.stringify(payload),
     });
+}
+
+// --- Ticker ---
+let tickerDebounce = null;
+
+function syncTicker() {
+    if (!currentDeviceId) return;
+    const enabled   = document.getElementById('ticker-enabled').checked;
+    const text      = document.getElementById('ticker-text').value;
+    const speed     = parseInt(document.getElementById('ticker-speed').value);
+    const font_size = parseInt(document.getElementById('ticker-fontsize').value);
+    sendCommand('set_ticker', { enabled, text, speed, font_size })
+        .then(function() { showToast('Running text diperbarui', 'success'); })
+        .catch(function() { showToast('Gagal memperbarui running text', 'error'); });
+}
+
+function syncTickerDebounced() {
+    clearTimeout(tickerDebounce);
+    tickerDebounce = setTimeout(syncTicker, 500);
+}
+
+function updateTickerSpeed(val) {
+    document.getElementById('ticker-speed-value').textContent = val + ' px/s';
+    syncTickerDebounced();
+}
+
+function updateTickerChar() {
+    const len = document.getElementById('ticker-text').value.length;
+    document.getElementById('ticker-char-count').textContent = len;
+}
+
+function updateTickerFontSize(val) {
+    document.getElementById('ticker-fontsize-value').textContent = val + 'px';
+    syncTickerDebounced();
 }
 </script>
 {% endblock %}

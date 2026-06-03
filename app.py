@@ -603,7 +603,9 @@ def api_config_display():
     return jsonify({
         k: AppConfig.get(k, CONFIG_DEFAULTS[k])
         for k in ('idle_show_clock', 'idle_show_date', 'idle_logo',
-                  'idle_label', 'idle_bg_from', 'idle_bg_to')
+                  'idle_label', 'idle_bg_from', 'idle_bg_to',
+                  'ticker_enabled', 'ticker_text', 'ticker_speed',
+                  'ticker_font_size', 'ticker_bg', 'ticker_color')
     })
 
 
@@ -1005,6 +1007,23 @@ def api_display_command():
         socketio.emit('command', {'action': 'set_volume', 'volume': vol},
                       room=room, namespace='/display')
         return jsonify({'status': 'ok', 'volume': vol})
+
+    elif action == 'set_ticker':
+        text = data.get('text', '')[:50]
+        ticker = {
+            'enabled':   data.get('enabled', False),
+            'text':      text,
+            'speed':     data.get('speed', 40),
+            'font_size': max(10, min(48, int(data.get('font_size', 14)))),
+        }
+        AppConfig.set('ticker_enabled',   'true' if ticker['enabled'] else 'false')
+        AppConfig.set('ticker_text',      ticker['text'])
+        AppConfig.set('ticker_speed',     str(ticker['speed']))
+        AppConfig.set('ticker_font_size', str(ticker['font_size']))
+        db.session.commit()
+        socketio.emit('command', {'action': 'set_ticker', **ticker},
+                      room=room, namespace='/display')
+        return jsonify({'status': 'ok', **ticker})
 
     return jsonify({'error': 'Aksi tidak dikenal'}), 400
 
