@@ -2,8 +2,18 @@
 
 {% block title %}Dashboard - TV Control{% endblock %}
 
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block header %}
 <i class="fa-solid fa-gauge-high"></i> Dashboard
+{% endblock %}
+
+{% block actions %}
+<button class="btn btn-ghost" onclick="exportPDF()">
+    <i class="fa-solid fa-file-pdf"></i> Export PDF
+</button>
 {% endblock %}
 
 {% block content %}
@@ -107,6 +117,104 @@
     </div>
 </div>
 
+<!-- TV Status Report -->
+<div class="grid-2" style="margin-top:24px">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-chart-pie"></i> Grafik Status TV</h3>
+            <button class="btn btn-ghost btn-sm" onclick="loadReport()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:20px">
+            <div style="position:relative;width:200px;height:200px">
+                <canvas id="tv-chart"></canvas>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                    <div style="font-size:28px;font-weight:700;color:var(--text-primary)" id="chart-total">—</div>
+                    <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase">Total TV</div>
+                </div>
+            </div>
+            <div class="report-legend">
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:#2dd4a0"></span>
+                    <span class="legend-label">Hidup</span>
+                    <span class="legend-val" id="legend-online">—</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:#f56565"></span>
+                    <span class="legend-label">Mati</span>
+                    <span class="legend-val" id="legend-offline">—</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:var(--border-light)"></span>
+                    <span class="legend-label">Total Terdaftar</span>
+                    <span class="legend-val" id="legend-total">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-list"></i> Detail Perangkat</h3>
+        </div>
+        <div class="card-body no-padding">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Nama TV</th>
+                        <th>Lokasi</th>
+                        <th>Status</th>
+                        <th>Mode</th>
+                    </tr>
+                </thead>
+                <tbody id="report-tbody">
+                    <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Memuat...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Print-only report -->
+<div id="print-report">
+    <div class="print-header">
+        <div class="print-title">Laporan Status Perangkat TV</div>
+        <div class="print-meta">
+            <span>Dicetak oleh: {{ session.admin_username }}</span>
+            <span id="print-timestamp"></span>
+        </div>
+    </div>
+    <div class="print-summary">
+        <div class="print-stat">
+            <div class="print-stat-val" id="print-total">—</div>
+            <div class="print-stat-label">Total Terdaftar</div>
+        </div>
+        <div class="print-stat" style="border-color:#2dd4a0">
+            <div class="print-stat-val" style="color:#2dd4a0" id="print-online">—</div>
+            <div class="print-stat-label">Hidup (Online)</div>
+        </div>
+        <div class="print-stat" style="border-color:#f56565">
+            <div class="print-stat-val" style="color:#f56565" id="print-offline">—</div>
+            <div class="print-stat-label">Mati (Offline)</div>
+        </div>
+    </div>
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama TV</th>
+                <th>Lokasi</th>
+                <th>Status</th>
+                <th>Mode</th>
+                <th>Tayangan</th>
+            </tr>
+        </thead>
+        <tbody id="print-tbody"></tbody>
+    </table>
+    <div class="print-footer">Laporan dibuat otomatis oleh TV Control System.</div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -138,7 +246,116 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.playing) {
             playingEl.textContent = data.playing;
         }
+        // Refresh report table on status change
+        loadReport();
     });
+});
+
+// ---- TV Report Chart ----
+let tvChart = null;
+
+function initChart() {
+    const ctx = document.getElementById('tv-chart').getContext('2d');
+    tvChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Hidup', 'Mati'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: ['#2dd4a0', '#f56565'],
+                borderColor: ['#1a1f2e', '#1a1f2e'],
+                borderWidth: 3,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            cutout: '68%',
+            plugins: { legend: { display: false }, tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return ' ' + ctx.label + ': ' + ctx.raw + ' TV';
+                    }
+                }
+            }},
+            animation: { duration: 500 },
+        }
+    });
+}
+
+async function loadReport() {
+    try {
+        const data = await api('/api/report/devices');
+
+        // Update chart
+        if (!tvChart) initChart();
+        // If all 0, show placeholder
+        const hasData = data.total > 0;
+        tvChart.data.datasets[0].data = hasData
+            ? [data.online, data.offline]
+            : [1, 0];
+        tvChart.data.datasets[0].backgroundColor = hasData
+            ? ['#2dd4a0', '#f56565']
+            : ['#252d3f', '#252d3f'];
+        tvChart.update();
+
+        document.getElementById('chart-total').textContent = data.total;
+        document.getElementById('legend-online').textContent  = data.online;
+        document.getElementById('legend-offline').textContent = data.offline;
+        document.getElementById('legend-total').textContent   = data.total;
+
+        // Update screen table
+        const tbody = document.getElementById('report-tbody');
+        if (!data.devices.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Belum ada perangkat</td></tr>';
+        } else {
+            tbody.innerHTML = data.devices.map(function(d) {
+                const dot = d.status === 'online'
+                    ? '<span class="status-dot online" style="display:inline-block;margin-right:6px"></span>Hidup'
+                    : '<span class="status-dot"       style="display:inline-block;margin-right:6px"></span>Mati';
+                const mode = d.mode === 'iptv' ? 'IPTV' : d.mode === 'ads' ? 'Iklan' : d.mode === 'idle' ? 'Idle' : '-';
+                return '<tr>' +
+                    '<td>' + d.name + '</td>' +
+                    '<td style="color:var(--text-muted)">' + d.location + '</td>' +
+                    '<td>' + dot + '</td>' +
+                    '<td style="color:var(--text-muted)">' + mode + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        // Populate print report
+        document.getElementById('print-total').textContent   = data.total;
+        document.getElementById('print-online').textContent  = data.online;
+        document.getElementById('print-offline').textContent = data.offline;
+        const printTbody = document.getElementById('print-tbody');
+        printTbody.innerHTML = data.devices.map(function(d, i) {
+            const mode = d.mode === 'iptv' ? 'IPTV' : d.mode === 'ads' ? 'Iklan' : d.mode === 'idle' ? 'Idle' : '-';
+            return '<tr>' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + d.name + '</td>' +
+                '<td>' + d.location + '</td>' +
+                '<td class="' + (d.status === 'online' ? 'status-on' : 'status-off') + '">' +
+                    (d.status === 'online' ? 'Hidup' : 'Mati') + '</td>' +
+                '<td>' + mode + '</td>' +
+                '<td>' + (d.playing !== '-' ? d.playing : '—') + '</td>' +
+                '</tr>';
+        }).join('');
+    } catch(e) {
+        console.error('loadReport:', e);
+    }
+}
+
+function exportPDF() {
+    const now = new Date();
+    const pad = function(n) { return String(n).padStart(2, '0'); };
+    const ts = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate()) +
+               '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    document.getElementById('print-timestamp').textContent = 'Waktu: ' + ts;
+    window.print();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initChart();
+    loadReport();
 });
 </script>
 {% endblock %}

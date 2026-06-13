@@ -1034,6 +1034,31 @@ def api_display_status():
     return jsonify(get_displays_summary())
 
 
+@app.route('/api/report/devices')
+@login_required
+def api_report_devices():
+    devices = Device.query.order_by(Device.created_at).all()
+    rows = []
+    for dev in devices:
+        info = connected_displays.get(dev.token)
+        rows.append({
+            'id':       dev.id,
+            'name':     dev.name,
+            'location': dev.location or '-',
+            'status':   'online' if info else 'offline',
+            'mode':     info.get('mode', '-') if info else '-',
+            'playing':  info.get('playing', '-') if info else '-',
+        })
+    total   = len(rows)
+    online  = sum(1 for r in rows if r['status'] == 'online')
+    return jsonify({
+        'total':   total,
+        'online':  online,
+        'offline': total - online,
+        'devices': rows,
+    })
+
+
 # ---------------------------------------------------------------------------
 # Stream Proxy (CORS bypass for IPTV)
 # ---------------------------------------------------------------------------
