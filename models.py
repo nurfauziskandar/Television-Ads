@@ -129,6 +129,7 @@ CONFIG_DEFAULTS = {
     'color_bg_card':     '#161b28',
     'color_text_primary':'#e6e9f0',
     # Idle display
+    'idle_style':      'normal',
     'idle_show_clock': 'true',
     'idle_show_date':  'true',
     'idle_logo':       '',

@@ -602,7 +602,7 @@ def api_config_display():
     """Konfigurasi idle display — tidak memerlukan auth (diakses display client)."""
     return jsonify({
         k: AppConfig.get(k, CONFIG_DEFAULTS[k])
-        for k in ('idle_show_clock', 'idle_show_date', 'idle_logo',
+        for k in ('idle_style', 'idle_show_clock', 'idle_show_date', 'idle_logo',
                   'idle_label', 'idle_bg_from', 'idle_bg_to',
                   'ticker_enabled', 'ticker_text', 'ticker_speed',
                   'ticker_font_size', 'ticker_bg', 'ticker_color')

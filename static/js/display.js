@@ -495,6 +495,30 @@
         var logoEl   = document.getElementById('idle-logo');
         var logoImg  = document.getElementById('idle-logo-img');
         var labelEl  = document.querySelector('.idle-label');
+        var statusEl = document.getElementById('idle-status');
+        var pulseEl  = document.querySelector('.idle-pulse');
+        var tokenEl  = document.getElementById('idle-token-badge');
+
+        if (cfg.idle_style === 'blank') {
+            screenIdleEl.style.background = '#000';
+            if (clockEl)  clockEl.style.display  = 'none';
+            if (dateEl)   dateEl.style.display   = 'none';
+            if (iconEl)   iconEl.style.display   = 'none';
+            if (logoEl)   logoEl.style.display   = 'none';
+            if (labelEl)  labelEl.style.display  = 'none';
+            if (statusEl) statusEl.style.display = 'none';
+            if (pulseEl)  pulseEl.style.display  = 'none';
+            if (tokenEl)  tokenEl.style.display  = 'none';
+            return;
+        }
+
+        // Restore visibility (in case was blank before)
+        if (clockEl)  clockEl.style.display  = '';
+        if (dateEl)   dateEl.style.display   = '';
+        if (labelEl)  labelEl.style.display  = '';
+        if (statusEl) statusEl.style.display = '';
+        if (pulseEl)  pulseEl.style.display  = '';
+        if (tokenEl)  tokenEl.style.display  = '';
 
         // Background gradasi
         var from = cfg.idle_bg_from || '#0a1628';
@@ -502,7 +526,7 @@
         screenIdleEl.style.background =
             'radial-gradient(ellipse at center, ' + from + ' 0%, ' + to + ' 70%)';
 
-        // Logo vs icon: tampilkan logo jika ada, fallback ke icon broadcast
+        // Logo vs icon
         if (cfg.idle_logo) {
             logoImg.src = '/static/uploads/logo/' + cfg.idle_logo;
             logoEl.style.display = '';

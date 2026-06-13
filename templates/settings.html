@@ -148,6 +148,32 @@
             </p>
 
             <div class="form-group">
+                <label class="form-label">Mode Tampilan</label>
+                <div class="idle-style-picker">
+                    <label class="idle-style-option {% if config.idle_style != 'blank' %}selected{% endif %}"
+                           id="style-opt-normal">
+                        <input type="radio" name="idle_style" value="normal"
+                               {% if config.idle_style != 'blank' %}checked{% endif %}
+                               onchange="onIdleStyleChange(this.value)">
+                        <div class="idle-style-preview idle-style-preview--normal">
+                            <div style="font-size:18px;font-weight:200;opacity:.9">00:00</div>
+                            <div style="font-size:7px;opacity:.4;letter-spacing:2px;margin-top:2px">IDLE</div>
+                        </div>
+                        <span>Normal</span>
+                    </label>
+                    <label class="idle-style-option {% if config.idle_style == 'blank' %}selected{% endif %}"
+                           id="style-opt-blank">
+                        <input type="radio" name="idle_style" value="blank"
+                               {% if config.idle_style == 'blank' %}checked{% endif %}
+                               onchange="onIdleStyleChange(this.value)">
+                        <div class="idle-style-preview idle-style-preview--blank"></div>
+                        <span>Blank (Hitam)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="idle-normal-settings">
+            <div class="form-group">
                 <label class="form-label">Teks Label</label>
                 <input type="text" class="form-control" id="idle_label"
                        value="{{ config.idle_label }}" placeholder="TV Control System">
@@ -231,6 +257,7 @@
                 </div>
 
             </div>
+            </div><!-- /#idle-normal-settings -->
         </div>
     </div>
 
@@ -291,6 +318,8 @@ async function saveSettings() {
     });
 
     // Idle display
+    const styleEl = document.querySelector('input[name="idle_style"]:checked');
+    payload.idle_style      = styleEl ? styleEl.value : 'normal';
     payload.idle_label      = document.getElementById('idle_label').value.trim() || 'TV Control System';
     payload.idle_bg_from    = document.getElementById('idle_bg_from').value;
     payload.idle_bg_to      = document.getElementById('idle_bg_to').value;
@@ -345,6 +374,29 @@ async function deleteLogo() {
         showToast(e.message, 'error');
     }
 }
+
+function onIdleStyleChange(val) {
+    const normal = document.getElementById('idle-normal-settings');
+    const optNormal = document.getElementById('style-opt-normal');
+    const optBlank  = document.getElementById('style-opt-blank');
+    if (val === 'blank') {
+        normal.style.opacity = '0.35';
+        normal.style.pointerEvents = 'none';
+        optBlank.classList.add('selected');
+        optNormal.classList.remove('selected');
+    } else {
+        normal.style.opacity = '';
+        normal.style.pointerEvents = '';
+        optNormal.classList.add('selected');
+        optBlank.classList.remove('selected');
+    }
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function() {
+    const checked = document.querySelector('input[name="idle_style"]:checked');
+    if (checked) onIdleStyleChange(checked.value);
+});
 
 // Live preview dari color picker saat halaman dimuat
 document.querySelectorAll('input[type="color"]').forEach(picker => {

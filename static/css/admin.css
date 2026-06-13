@@ -2106,3 +2106,55 @@ textarea.form-control { resize: vertical; min-height: 80px; }
         vertical-align: middle;
     }
 }
+
+/* ===================================================================
+   Idle Style Picker
+   =================================================================== */
+
+.idle-style-picker {
+    display: flex;
+    gap: 16px;
+}
+
+.idle-style-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.idle-style-option input[type="radio"] { display: none; }
+
+.idle-style-preview {
+    width: 120px;
+    height: 72px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.idle-style-preview--normal {
+    background: radial-gradient(ellipse at center, #0a1628 0%, #050a14 70%);
+    color: #fff;
+}
+
+.idle-style-preview--blank {
+    background: #000;
+}
+
+.idle-style-option.selected .idle-style-preview {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.idle-style-option.selected {
+    color: var(--accent);
+    font-weight: 500;
+}
