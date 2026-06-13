@@ -185,6 +185,14 @@
             <span id="print-timestamp"></span>
         </div>
     </div>
+    <div class="print-chart-wrap">
+        <img id="print-chart-img" src="" alt="Grafik Status TV">
+        <div class="print-chart-legend">
+            <div><span class="print-dot" style="background:#2dd4a0"></span> Hidup: <strong id="print-legend-on">—</strong></div>
+            <div><span class="print-dot" style="background:#f56565"></span> Mati: <strong id="print-legend-off">—</strong></div>
+            <div><span class="print-dot" style="background:#888"></span> Total: <strong id="print-legend-tot">—</strong></div>
+        </div>
+    </div>
     <div class="print-summary">
         <div class="print-stat">
             <div class="print-stat-val" id="print-total">—</div>
@@ -270,15 +278,18 @@ function initChart() {
         },
         options: {
             cutout: '68%',
-            plugins: { legend: { display: false }, tooltip: {
-                callbacks: {
-                    label: function(ctx) {
-                        return ' ' + ctx.label + ': ' + ctx.raw + ' TV';
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            return ' ' + ctx.label + ': ' + ctx.raw + ' TV';
+                        }
                     }
-                }
-            }},
+                },
+            },
             animation: { duration: 500 },
-        }
+        },
     });
 }
 
@@ -350,6 +361,23 @@ function exportPDF() {
     const ts = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate()) +
                '  ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
     document.getElementById('print-timestamp').textContent = 'Waktu: ' + ts;
+
+    // Inject chart as image (white bg) into print report
+    if (tvChart) {
+        const src = document.getElementById('tv-chart');
+        const tmp = document.createElement('canvas');
+        tmp.width  = src.width;
+        tmp.height = src.height;
+        const tCtx = tmp.getContext('2d');
+        tCtx.fillStyle = '#ffffff';
+        tCtx.fillRect(0, 0, tmp.width, tmp.height);
+        tCtx.drawImage(src, 0, 0);
+        document.getElementById('print-chart-img').src = tmp.toDataURL('image/png');
+    }
+    document.getElementById('print-legend-on').textContent  = document.getElementById('legend-online').textContent;
+    document.getElementById('print-legend-off').textContent = document.getElementById('legend-offline').textContent;
+    document.getElementById('print-legend-tot').textContent = document.getElementById('legend-total').textContent;
+
     window.print();
 }
 
