@@ -1,0 +1,12 @@
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.sessionstore.max_resumed_crashes", 0);
+user_pref("browser.sessionstore.enabled", false);
+user_pref("browser.startup.page", 1);
+user_pref("browser.startup.homepage", "file:///home/armbian/kiosk/index.html");
+user_pref("browser.warnOnQuit", false);
+user_pref("browser.tabs.warnOnClose", false);
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("browser.shell.checkDefaultBrowser", false);
+user_pref("browser.rights.3.shown", true);
