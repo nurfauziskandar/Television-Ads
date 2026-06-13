@@ -15,3 +15,4 @@ static/uploads/channels/*
 !static/uploads/channels/.gitkeep
 static/uploads/logo/*
 !static/uploads/logo/.gitkeep
+proposal/
