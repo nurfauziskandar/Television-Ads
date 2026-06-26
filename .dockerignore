@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+.DS_Store
+proposal/
+stb_armbian/
+gambar/
+*.db
+.secret_key
