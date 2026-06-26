@@ -15,4 +15,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "-b", "0.0.0.0:8000", "app:app"]
