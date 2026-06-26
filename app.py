@@ -1234,5 +1234,6 @@ with app.app_context():
             ))
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=8000, debug=True,
-                 allow_unsafe_werkzeug=True, use_reloader=False)
+    debug = os.environ.get('FLASK_DEBUG', '0') == '1'
+    socketio.run(app, host='0.0.0.0', port=8000, debug=debug,
+                 allow_unsafe_werkzeug=debug, use_reloader=False)

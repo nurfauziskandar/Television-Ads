@@ -10,3 +10,4 @@ stb_armbian/
 gambar/
 *.db
 .secret_key
+.env
