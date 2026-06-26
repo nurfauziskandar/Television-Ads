@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 import os
 import re
 import secrets
@@ -54,7 +51,7 @@ except (ImportError, AttributeError):
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 # token -> display info dict
 connected_displays = {}

@@ -15,4 +15,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "-k", "gthread", "--threads", "4", "-b", "0.0.0.0:8000", "app:app"]
