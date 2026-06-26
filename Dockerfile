@@ -9,10 +9,14 @@ COPY . .
 
 RUN mkdir -p static/uploads/ads static/uploads/channels static/uploads/logo data && \
     useradd -r -u 1001 appuser && \
-    chown -R appuser /app
+    chown -R appuser /app && \
+    apt-get update && apt-get install -y --no-install-recommends gosu && \
+    rm -rf /var/lib/apt/lists/*
 
-USER appuser
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "-k", "gthread", "--threads", "4", "-b", "0.0.0.0:8000", "app:app"]
